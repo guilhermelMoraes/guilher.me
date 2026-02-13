@@ -1,0 +1,49 @@
+---
+import "@fontsource-variable/fira-code";
+import "bootstrap/dist/css/bootstrap.min.css";
+import packageJson from "../../package.json";
+
+interface Props {
+  title: string;
+}
+
+const { title } = Astro.props;
+---
+
+<html lang="pt-BR">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" href="/favicon.ico" />
+    <title>{title}</title>
+  </head>
+  <body>
+    <header class="stick-top start-0 right-0 container bg-body">
+      <div class="row">
+        <div class="col py-4 border-bottom">
+          <a href="/" class="text-decoration-none">
+            <h1 class="text-primary mb-0">guilher.me</h1>
+          </a>
+        </div>
+      </div>
+    </header>
+    <div class="container">
+      <div class="row">
+        <main class="col py-4">
+          <slot />
+        </main>
+      </div>
+      <div class="row border-top">
+        <footer class="col py-4">
+          <p class="mb-0">
+            Desenhado e desenvolvido por Guilherme, em 2026 — <span
+              >v{packageJson.version}</span
+            >
+          </p>
+        </footer>
+      </div>
+    </div>
+  </body>
+</html>

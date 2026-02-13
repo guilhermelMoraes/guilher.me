@@ -1,0 +1,35 @@
+---
+import Layout from "../components/layout.astro";
+import { Image } from "astro:assets";
+import "../index.css";
+
+import profilePic from "../images/profile-picture.jpeg";
+---
+
+<Layout title="guilher.me">
+  <section class="py-3">
+    <div class="container px-0">
+      <div class="row">
+        <div class="col-12 col-lg-3 mb-3 mb-lg-0 d-flex">
+          <Image
+            src={profilePic}
+            alt="It's a me!"
+            class="rounded mx-auto img-fluid"
+          />
+        </div>
+        <div class="col-12 col-lg-9">
+          <h2>Sobre mim</h2>
+          <p class="col txt-justify">
+            Olá! Meu nome é Guilherme e este é meu domínio na internet. Sou
+            desenvolvedor de software e nerd, então ter meu próprio espaço na
+            internet é apenas uma maneira de continuar exercendo tanto a minha
+            profissão quanto a minha... Vocação pessoal? Estou criando isto aqui
+            sem nenhum compromisso de dedicar tempo e esforço para garantir que
+            esteja sempre atualizado. No entanto, espero que seja atualizado o
+            suficiente para não ser muito irrelevante até mesmo para mim.
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+</Layout>
