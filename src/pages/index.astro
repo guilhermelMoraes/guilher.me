@@ -1,9 +1,10 @@
 ---
-import Layout from "../components/layout.astro";
-import { Image } from "astro:assets";
-import "../index.css";
+import { Image } from 'astro:assets';
 
-import profilePic from "../images/profile-picture.jpeg";
+import Layout from '../components/layout.astro';
+import SocialMediaLinks from '../components/social-media-links.component';
+import profilePic from '../images/profile-picture.jpeg';
+import '../index.css';
 ---
 
 <Layout title="guilher.me">
@@ -15,6 +16,7 @@ import profilePic from "../images/profile-picture.jpeg";
             src={profilePic}
             alt="It's a me!"
             class="rounded mx-auto img-fluid"
+            loading="eager"
           />
         </div>
         <div class="col-12 col-lg-9">
@@ -28,6 +30,7 @@ import profilePic from "../images/profile-picture.jpeg";
             esteja sempre atualizado. No entanto, espero que seja atualizado o
             suficiente para não ser muito irrelevante até mesmo para mim.
           </p>
+          <SocialMediaLinks client:load />
         </div>
       </div>
     </div>

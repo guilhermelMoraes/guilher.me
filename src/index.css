@@ -2,6 +2,16 @@
   margin: 0;
   padding: 0;
   user-select: none;
-  font-family: "Fira Code Variable", monospace;
+  font-family: 'Fira Code Variable', monospace;
   box-sizing: border-box;
+}
+
+h2,
+h3,
+p {
+  margin-bottom: 1rem;
+}
+
+.txt-justify {
+  text-align: justify;
 }
