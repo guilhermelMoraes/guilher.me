@@ -2,7 +2,7 @@ import { useEffect, useState, type ReactNode } from 'react';
 
 import s from './card.module.css';
 
-type CardProps = {
+export type CardProps = {
   readonly topPill?: ReactNode;
   readonly header: string;
   readonly body?: ReactNode;
@@ -45,6 +45,7 @@ export default function Card({
           src={src}
           width={width}
           height={height}
+          decoding="async"
           loading="lazy"
           alt={image.alt}
           className="rounded"

@@ -1,20 +1,23 @@
 import { Form } from 'react-bootstrap';
-import Periods from '../../types/periods.enum';
+import Periods from './periods.enum';
 
-type Show = 'albums' | 'tracks' | 'artists';
+type Sources = 'albums' | 'tracks' | 'artists';
 
-type PeriodSelectProps = {
-  readonly source: Show;
-  readonly teste: (source: Show, period: Periods) => Promise<void>;
+export type PeriodSelectProps = {
+  readonly source: Sources;
+  readonly setState: (source: Sources, period: Periods) => Promise<void>;
 };
 
-export default function PeriodSelect({ source, teste }: PeriodSelectProps) {
+export default function PeriodSelect({
+  source,
+  setState,
+}: PeriodSelectProps) {
   return (
     <Form.Select
       aria-label="Períodos disponíveis"
       className="d-inline-block w-25 mb-2"
       onChange={({ currentTarget }) =>
-        teste(source, currentTarget.value as Periods)
+        setState(source, currentTarget.value as Periods)
       }
     >
       <option value={Periods.LAST_WEEK}>Últimos 7 dias</option>

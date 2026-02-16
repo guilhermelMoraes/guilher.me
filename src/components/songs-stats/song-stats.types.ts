@@ -1,4 +1,4 @@
-type Cover = {
+export type Cover = {
   size: 'small' | 'medium' | 'large' | 'extralarge';
   /**
    * @description image URL
@@ -6,7 +6,7 @@ type Cover = {
   '#text': string;
 };
 
-type Track = {
+export type Track = {
   '@attr': { nowplaying?: boolean };
   name: string;
   url: string;
@@ -29,9 +29,9 @@ type Track = {
   };
 };
 
-type TopTrack = {
+export type TopTrack = {
   name: string;
-  image: LastFMImage[];
+  image: Cover[];
   artist: {
     name: string;
   };
@@ -43,7 +43,7 @@ type TopTrack = {
   url: string;
 };
 
-type Album = {
+export type Album = {
   artist: {
     name: string;
   };
@@ -56,7 +56,7 @@ type Album = {
   image: Cover[];
 };
 
-type Artist = {
+export type Artist = {
   name: string;
   image: Cover[];
   url: string;

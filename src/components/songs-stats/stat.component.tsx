@@ -1,12 +1,11 @@
-import { type ReactNode } from 'react';
 import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
-type StatProps = {
+export type StatProps = {
   readonly label: string;
-  readonly stat: ReactNode;
+  readonly value: string;
 };
 
-export default function Stat({ label, stat }: StatProps) {
+export default function Stat({ label, value }: StatProps) {
   return (
     <div className="col-6 col-sm-3">
       <div className="rounded">
@@ -22,7 +21,7 @@ export default function Stat({ label, stat }: StatProps) {
             <i className="bi bi-info-circle" />
           </OverlayTrigger>
         </small>
-        <h4 className="text-center mb-0">{stat}</h4>
+        <h4 className="text-center mb-0">{value}</h4>
       </div>
     </div>
   );
