@@ -6,6 +6,11 @@
   box-sizing: border-box;
 }
 
+section {
+  margin-top: 1rem !important;
+  margin-bottom: 1rem !important;
+}
+
 h2,
 h3,
 p {

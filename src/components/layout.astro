@@ -21,7 +21,7 @@ const { title } = Astro.props;
     <title>{title}</title>
   </head>
   <body>
-    <header class="stick-top start-0 right-0 container bg-body">
+    <header class="container stick-top start-0 right-0 bg-body">
       <div class="row">
         <div class="col py-4 border-bottom">
           <a href="/" class="text-decoration-none">
@@ -30,18 +30,16 @@ const { title } = Astro.props;
         </div>
       </div>
     </header>
+    <main>
+      <slot />
+    </main>
     <div class="container">
-      <div class="row">
-        <main class="col py-4">
-          <slot />
-        </main>
-      </div>
       <div class="row border-top">
         <footer class="col py-4">
           <p class="mb-0">
-            Desenhado e desenvolvido por Guilherme, em 2026 — <span
-              >v{packageJson.version}</span
-            >
+            Desenhado e desenvolvido por Guilherme, em 2026 — <span>
+              v{packageJson.version}
+            </span>
           </p>
         </footer>
       </div>

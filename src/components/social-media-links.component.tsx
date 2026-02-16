@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import Form from 'react-bootstrap/Form';
+import { Form } from 'react-bootstrap';
 
 type LinkData = {
   icon: string;
@@ -106,4 +106,4 @@ function SocialMediaLinks() {
   );
 }
 
-export default SocialMediaLinks
+export default SocialMediaLinks;

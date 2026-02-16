@@ -1,0 +1,62 @@
+#previous-songs {
+  max-height: 318px;
+}
+
+#previous-songs__gradient {
+  height: 40px;
+  background: linear-gradient(to bottom, #ffffff00, #fff);
+  pointer-events: none;
+}
+
+#bars {
+  position: relative;
+  display: inline-flex;
+  justify-content: space-between;
+  width: 25px;
+  height: 13px;
+  vertical-align: super;
+}
+
+#bars span {
+  width: 5px;
+  height: 100%;
+  background-color: #fff;
+  border-radius: 1px;
+  content: '';
+  transform-origin: bottom;
+  animation: bounce 2.2s ease infinite alternate;
+}
+
+#bars span:nth-last-of-type(2) {
+  animation-delay: -2.5s;
+}
+
+#bars span:nth-last-of-type(3) {
+  animation-delay: -3.7s;
+}
+
+#bars span:nth-last-of-type(4) {
+  animation-delay: -1.7s;
+}
+
+@keyframes bounce {
+  10% {
+    transform: scaleY(0.3);
+  }
+
+  30% {
+    transform: scaleY(1);
+  }
+
+  60% {
+    transform: scaleY(0.5);
+  }
+
+  80% {
+    transform: scaleY(0.75);
+  }
+
+  100% {
+    transform: scaleY(0.6);
+  }
+}

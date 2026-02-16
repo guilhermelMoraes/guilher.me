@@ -1,7 +1,9 @@
 // @ts-check
-import { defineConfig } from 'astro/config';
+import { defineConfig, envField } from 'astro/config';
 
 import react from '@astrojs/react';
+
+import node from '@astrojs/node';
 
 // https://astro.build/config
 export default defineConfig({
@@ -9,6 +11,25 @@ export default defineConfig({
   vite: {
     ssr: {
       noExternal: ['bootstrap'],
+    },
+  },
+  adapter: node({
+    mode: 'standalone',
+  }),
+  env: {
+    schema: {
+      SONGS_STATS_API_KEY: envField.string({
+        context: 'server',
+        access: 'secret',
+      }),
+      SONGS_STATS_USER: envField.string({
+        context: 'server',
+        access: 'secret',
+      }),
+      SONGS_STATS_ENDPOINT: envField.string({
+        context: 'server',
+        access: 'secret',
+      }),
     },
   },
 });
