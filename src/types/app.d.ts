@@ -29,6 +29,20 @@ type Track = {
   };
 };
 
+type TopTrack = {
+  name: string;
+  image: LastFMImage[];
+  artist: {
+    name: string;
+  };
+  playcount: string;
+  '@attr': {
+    rank: string;
+  };
+  duration: string;
+  url: string;
+};
+
 type Album = {
   artist: {
     name: string;
@@ -39,5 +53,15 @@ type Album = {
     rank: string;
   };
   name: string;
-  image: LastFMImage[];
+  image: Cover[];
+};
+
+type Artist = {
+  name: string;
+  image: Cover[];
+  url: string;
+  playcount: string;
+  '@attr': {
+    rank: string;
+  };
 };

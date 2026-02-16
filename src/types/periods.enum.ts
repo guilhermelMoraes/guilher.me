@@ -4,7 +4,7 @@ enum Periods {
   LAST_MONTH = '1month',
   LAST_QUARTER = '3month',
   LAST_SIX_MONTHS = '6month',
-  LAST_YEAR = '12month'
+  LAST_YEAR = '12month',
 }
 
 export default Periods;

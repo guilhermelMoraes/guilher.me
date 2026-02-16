@@ -1,6 +1,5 @@
 import { type ReactNode } from 'react';
-import OverlayTrigger from 'react-bootstrap/OverlayTrigger';
-import Tooltip from 'react-bootstrap/Tooltip';
+import { OverlayTrigger, Tooltip } from 'react-bootstrap';
 
 type StatProps = {
   readonly label: string;

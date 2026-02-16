@@ -1,10 +1,11 @@
-import { useEffect, useState } from 'react';
-import { Badge, Tabs } from 'react-bootstrap';
+import { useCallback, useEffect, useState } from 'react';
+import { Badge, Form, Tab, Tabs } from 'react-bootstrap';
 
+import Periods from '../../types/periods.enum';
 import Card from '../card/card.component';
 import s from './song-stats.module.css';
 import Stat from './stat.component';
-import Periods from '../../types/periods.enum';
+import PeriodSelect from './period-select.component';
 
 const formatUnixDate = (unixTs: number) => {
   const date = new Date(unixTs * 1000);
@@ -29,18 +30,24 @@ type SongStats = {
   album_count: string;
 };
 
+const podium: Record<string, string> = {
+  '1': '🥇',
+  '2': '🥈',
+  '3': '🥉',
+};
+
 const fetchSongData = async (
   availableData:
     | 'generalStats'
     | 'playbackState'
     | 'topAlbums'
     | 'topArtists'
-    | 'topSongs',
+    | 'topTracks',
   period?: Periods,
 ) => {
   const params = new URLSearchParams({
     data: availableData,
-    ...period ? { period } : {}
+    ...(period ? { period } : {}),
   });
 
   const response = await fetch(`/api/music-data?${params}`);
@@ -50,14 +57,60 @@ const fetchSongData = async (
 
 function SongStats() {
   const [currentTab, setCurrentTab] = useState('topAlbums');
+  const [topTracks, setTopTracks] = useState<TopTrack[]>([]);
   const [playbackState, setPlaybackState] = useState<Track[]>([]);
   const [topAlbums, setTopAlbums] = useState<Album[]>([]);
+  const [topArtists, setTopArtists] = useState<Artist[]>([]);
   const [stats, setStats] = useState<SongStats>({
     album_count: '0',
     artist_count: '0',
     playcount: '0',
     track_count: '0',
   });
+
+  const getTopAlbums = useCallback(
+    async (period: Periods = Periods.LAST_WEEK): Promise<void> => {
+      const data = await fetchSongData('topAlbums', period);
+      if (data) {
+        setTopAlbums(data.topalbums.album);
+      }
+    },
+    [],
+  );
+
+  const getTopArtists = useCallback(
+    async (period: Periods = Periods.LAST_WEEK): Promise<void> => {
+      const data = await fetchSongData('topArtists', period);
+      if (data) {
+        setTopArtists(data.topartists.artist);
+      }
+    },
+    [],
+  );
+
+  const getTopTracks = useCallback(
+    async (period: Periods = Periods.LAST_WEEK): Promise<void> => {
+      const data = await fetchSongData('topTracks', period);
+      
+      if (data) {
+        setTopTracks(data.toptracks.track);
+      }
+    },
+    [],
+  );
+
+  const fetchDataPerPeriod = useCallback(
+    async (key: 'albums' | 'songs' | 'artists', period: Periods) => {
+      if (key === 'albums') {
+        await getTopAlbums(period);
+      }
+
+      if (key === 'artists') {
+        await getTopArtists(period);
+      }
+    },
+    [],
+  );
 
   useEffect(() => {
     const getGeneralStats = async (): Promise<void> => {
@@ -74,15 +127,9 @@ function SongStats() {
       }
     };
 
-    const topAlbums = async (): Promise<void> => {
-      const data = await fetchSongData('topAlbums');
-      if (data) {
-        console.log(data.topalbums);
-        // setTopAlbums()
-      }
-    }
-
-    topAlbums();
+    getTopTracks();
+    getTopAlbums();
+    getTopArtists();
     getGeneralStats();
     getPlaybackState();
   }, []);
@@ -107,17 +154,24 @@ function SongStats() {
       </div>
       {playbackState.length > 0 && (
         <div className="row gx-2 mb-4">
-          <div className="col-12 col-lg-7 mb-2 mb-lg-0">
+          <div
+            className="col-12 col-lg-7 mb-2 mb-lg-0"
+            style={{ maxHeight: 318 }}
+          >
             {track && (
               <Card
                 topPill={
                   <>
                     {track?.['@attr']?.nowplaying && (
-                      <Badge bg="danger" className="mb-1">
-                        <h6 className="text-truncate d-inline-block m-0">
+                      <Badge
+                        bg="danger"
+                        className="d-flex align-items-center mb-1"
+                        style={{ maxWidth: '170px' }}
+                      >
+                        <h6 className="text-truncate m-0 flex-grow-1">
                           Ouvindo agora
                         </h6>
-                        <span id={s['bars']} className="ms-1">
+                        <span id={s['bars']} className="ms-1 flex-shrink-0">
                           <span />
                           <span />
                           <span />
@@ -126,8 +180,11 @@ function SongStats() {
                       </Badge>
                     )}
                     {track?.date && (
-                      <Badge className="text-truncate" bg="secondary">
-                        <h6 className="text-truncate d-inline-block m-0">
+                      <Badge
+                        className="d-flex align-items-center mb-1"
+                        bg="secondary"
+                      >
+                        <h6 className="text-truncate m-0 flex-grow-1">
                           {formatUnixDate(Number.parseInt(track?.date.uts))}
                         </h6>
                       </Badge>
@@ -150,7 +207,11 @@ function SongStats() {
           </div>
 
           <div className="col-12 col-lg-5 position-relative">
-            <div id={s['previous-songs']} className="row overflow-auto">
+            <div
+              id={s['previous-songs']}
+              className="row overflow-auto"
+              style={{ maxHeight: 318 }}
+            >
               {playbackState
                 ?.filter((_, index) => index !== 0)
                 .map((track, index) => (
@@ -159,8 +220,16 @@ function SongStats() {
                       topPill={
                         <>
                           {track?.date && (
-                            <Badge className="text-truncate" bg="secondary">
-                              {formatUnixDate(Number.parseInt(track?.date.uts))}
+                            <Badge
+                              className="d-flex align-items-center mb-1"
+                              bg="secondary"
+                              style={{ maxWidth: '200px' }}
+                            >
+                              <p className="mb-0 text-truncate">
+                                {formatUnixDate(
+                                  Number.parseInt(track?.date.uts),
+                                )}
+                              </p>
                             </Badge>
                           )}
                         </>
@@ -168,7 +237,7 @@ function SongStats() {
                       header={track.name}
                       body={track.artist['#text']}
                       image={{
-                        src: track.image['3']['#text'],
+                        src: track.image.at(-1)?.['#text'] as string,
                         alt: `Album cover for ${track?.name}`,
                       }}
                       link={track.url}
@@ -185,9 +254,83 @@ function SongStats() {
         </div>
       )}
 
-      <Tabs activeKey={currentTab} onSelect={(k) => setCurrentTab(k as string)}>
+      <div className="row">
+        <div className="col">
+          <Tabs
+            activeKey={currentTab}
+            onSelect={(k) => setCurrentTab(k as string)}
+          >
+            {topAlbums.length > 0 && (
+              <Tab eventKey="topAlbums" title="Álbuns" className="py-3">
+                <PeriodSelect source="albums" teste={fetchDataPerPeriod} />
 
-      </Tabs>
+                <div className="container-fluid px-0">
+                  <div className="row g-2">
+                    {topAlbums.map((album, index) => (
+                      <div className="col-lg-4" key={`${album}-${index}`}>
+                        <Card
+                          topPill={
+                            <Badge
+                              className="mb-0 d-flex align-items-center"
+                              style={{ maxWidth: 150 }}
+                            >
+                              <p className="mb-0 text-truncate">
+                                Tocado {album.playcount} vezes{' '}
+                                {podium[album['@attr'].rank] ?? '⭐'}
+                              </p>
+                            </Badge>
+                          }
+                          header={album.name}
+                          body={album.artist.name}
+                          image={{
+                            src: album.image[2]['#text'],
+                            alt: `Album cover for ${album.name}`,
+                          }}
+                          link={album.url}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Tab>
+            )}
+
+            {topArtists.length > 0 && (
+              <Tab eventKey="topArtists" title="Artistas" className="py-3">
+                <PeriodSelect source="artists" teste={fetchDataPerPeriod} />
+                <div className="container-fluid px-0">
+                  <div className="row g-2">
+                    {topArtists.map((artist, index) => (
+                      <div className="col-lg-4" key={`${artist}-${index}`}>
+                        <Card
+                          topPill={
+                            <Badge
+                              className="mb-0 d-flex align-items-center"
+                              style={{ maxWidth: 150 }}
+                            >
+                              <p className="mb-0 text-truncate">
+                                Tocado {artist.playcount} vezes{' '}
+                                {podium[artist['@attr'].rank] ?? '⭐'}
+                              </p>
+                            </Badge>
+                          }
+                          header={artist.name}
+                          // body={artist.artist.name}
+                          image={{
+                            src: artist.image[2]['#text'],
+                            alt: `Album cover for ${artist.name}`,
+                          }}
+                          link={artist.url}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Tab>
+            )}
+          </Tabs>
+        </div>
+      </div>
     </section>
   );
 }

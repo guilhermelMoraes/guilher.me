@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { useEffect, useState, type ReactNode } from 'react';
 
 import s from './card.module.css';
 
@@ -24,10 +24,14 @@ export default function Card({
   body,
   link,
 }: CardProps) {
-  const [src, setSrc] = useState<string>(image.src ?? '/song-placeholder.png');
+  const [src, setSrc] = useState<string>('/song-placeholder.png');
 
   const width = image?.maxSize?.width ?? 124;
   const height = image?.maxSize?.height ?? 124;
+
+  useEffect(() => {
+    setSrc(image.src || image.src !== '' ? image.src : '/song-placeholder.png');
+  }, [image.src]);
 
   return (
     <div className="d-flex gap-2 border rounded p-2 shadow-sm h-100">

@@ -5,6 +5,8 @@ import {
   SONGS_STATS_USER,
 } from 'astro:env/server';
 
+import type Periods from '../../types/periods.enum';
+
 const commonParams = {
   user: SONGS_STATS_USER,
   api_key: SONGS_STATS_API_KEY,
@@ -28,25 +30,28 @@ const availableRequests = {
         method: 'user.getinfo',
       })}`,
     ),
-  topAlbums: (): Promise<Response> =>
+  topAlbums: (period?: Periods): Promise<Response> =>
     fetch(
       `${SONGS_STATS_ENDPOINT}/?${new URLSearchParams({
         ...commonParams,
         method: 'user.gettopalbums',
+        ...(period ? { period } : {}),
       })}`,
     ),
-  topArtists: (): Promise<Response> =>
+  topArtists: (period?: Periods): Promise<Response> =>
     fetch(
       `${SONGS_STATS_ENDPOINT}/?${new URLSearchParams({
         ...commonParams,
         method: 'user.gettopartists',
+        ...(period ? { period } : {}),
       })}`,
     ),
-  topSongs: (): Promise<Response> =>
+  topTracks: (period?: Periods): Promise<Response> =>
     fetch(
       `${SONGS_STATS_ENDPOINT}/?${new URLSearchParams({
         ...commonParams,
         method: 'user.gettoptracks',
+        ...(period ? { period } : {}),
       })}`,
     ),
 };
@@ -56,10 +61,12 @@ export const GET = (async ({ request }) => {
     const url = new URL(request.url);
 
     const data = url.searchParams.get('data');
-    const period = url.searchParams.get('period');
-  
+    const period = url.searchParams.get('period') as Periods | null;
+
     if (data && Object.keys(availableRequests).some((k) => k === data)) {
-      return await availableRequests[data as keyof typeof availableRequests]();
+      return await availableRequests[data as keyof typeof availableRequests](
+        period || undefined,
+      );
     }
 
     return new Response(null);
