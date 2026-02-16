@@ -91,7 +91,7 @@ function SongStats() {
   const getTopTracks = useCallback(
     async (period: Periods = Periods.LAST_WEEK): Promise<void> => {
       const data = await fetchSongData('topTracks', period);
-      
+
       if (data) {
         setTopTracks(data.toptracks.track);
       }
@@ -100,13 +100,17 @@ function SongStats() {
   );
 
   const fetchDataPerPeriod = useCallback(
-    async (key: 'albums' | 'songs' | 'artists', period: Periods) => {
+    async (key: 'albums' | 'tracks' | 'artists', period: Periods) => {
       if (key === 'albums') {
         await getTopAlbums(period);
       }
 
       if (key === 'artists') {
         await getTopArtists(period);
+      }
+
+      if (key === 'tracks') {
+        await getTopTracks(period);
       }
     },
     [],
@@ -315,12 +319,45 @@ function SongStats() {
                             </Badge>
                           }
                           header={artist.name}
-                          // body={artist.artist.name}
                           image={{
                             src: artist.image[2]['#text'],
                             alt: `Album cover for ${artist.name}`,
                           }}
                           link={artist.url}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              </Tab>
+            )}
+
+            {topTracks.length > 0 && (
+              <Tab eventKey="topSongs" title="Músicas" className="py-3">
+                <PeriodSelect source="tracks" teste={fetchDataPerPeriod} />
+                <div className="container-fluid px-0">
+                  <div className="row g-2">
+                    {topTracks.map((track, index) => (
+                      <div className="col-lg-4" key={`${track}-${index}`}>
+                        <Card
+                          topPill={
+                            <Badge
+                              className="mb-0 d-flex align-items-center"
+                              style={{ maxWidth: 150 }}
+                            >
+                              <p className="mb-0 text-truncate">
+                                Tocado {track.playcount} vezes{' '}
+                                {podium[track['@attr'].rank] ?? '⭐'}
+                              </p>
+                            </Badge>
+                          }
+                          header={track.name}
+                          body={track.artist.name}
+                          image={{
+                            src: track.image[2]['#text'],
+                            alt: `Album cover for ${track.name}`,
+                          }}
+                          link={track.url}
                         />
                       </div>
                     ))}

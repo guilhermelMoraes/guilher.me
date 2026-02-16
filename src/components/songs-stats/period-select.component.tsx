@@ -1,7 +1,7 @@
 import { Form } from 'react-bootstrap';
 import Periods from '../../types/periods.enum';
 
-type Show = 'albums' | 'songs' | 'artists';
+type Show = 'albums' | 'tracks' | 'artists';
 
 type PeriodSelectProps = {
   readonly source: Show;
