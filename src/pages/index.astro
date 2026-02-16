@@ -3,9 +3,10 @@ import { Image } from 'astro:assets';
 
 import Layout from '../components/layout.astro';
 import SocialMediaLinks from '../components/social-media-links.component';
-import SongsStats from '../components/songs-stats/songs-stats.component';
 import profilePic from '../images/profile-picture.jpeg';
 import '../index.css';
+
+import SongsStats from '../components/songs-stats/songs-stats.component';
 ---
 
 <Layout title="guilher.me">
@@ -13,7 +14,7 @@ import '../index.css';
     <section class="row">
       <div class="col">
         <div class="row">
-          <div class="col-12 col-lg-3 mb-3 mb-lg-0 d-flex">
+          <div class="d-flex col-12 col-lg-5 col-xl-4 mb-3 mb-lg-0">
             <Image
               src={profilePic}
               alt="It's a me!"
@@ -21,7 +22,7 @@ import '../index.css';
               loading="eager"
             />
           </div>
-          <div class="col-12 col-lg-9">
+          <div class="col-12 col-lg-7 col-xl-8">
             <h2>Sobre mim</h2>
             <p class="txt-justify">
               Olá! Meu nome é Guilherme e este é meu domínio na internet. Sou

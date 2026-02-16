@@ -8,14 +8,11 @@ export type PeriodSelectProps = {
   readonly setState: (source: Sources, period: Periods) => Promise<void>;
 };
 
-export default function PeriodSelect({
-  source,
-  setState,
-}: PeriodSelectProps) {
+export default function PeriodSelect({ source, setState }: PeriodSelectProps) {
   return (
     <Form.Select
       aria-label="Períodos disponíveis"
-      className="d-inline-block w-25 mb-2"
+      className="mb-2"
       onChange={({ currentTarget }) =>
         setState(source, currentTarget.value as Periods)
       }

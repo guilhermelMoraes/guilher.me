@@ -19,7 +19,7 @@ const availableRequests = {
     const fetchRecentTracks = await fetch(
       `${SONGS_STATS_ENDPOINT}/?${new URLSearchParams({
         ...commonParams,
-        limit: '10',
+        limit: '15',
         method: 'user.getrecenttracks',
       })}`,
     );

@@ -16,9 +16,8 @@ const formatUnixDate = (unixTs: number) => {
     day: '2-digit',
     month: 'short',
     year: 'numeric',
-    hour: '2-digit',
+    hour: 'numeric',
     minute: '2-digit',
-    hour12: false,
   });
 
   return formatter.format(date);
@@ -30,6 +29,26 @@ const podium: Record<string, string> = {
   '3': '🥉',
 };
 
+const fetchSongData = async <T = unknown,>(
+  availableData:
+    | 'generalStats'
+    | 'playbackState'
+    | 'topAlbums'
+    | 'topArtists'
+    | 'topTracks',
+  period?: Periods,
+): Promise<T> => {
+  const params = new URLSearchParams({
+    data: availableData,
+    ...(period ? { period } : {}),
+  });
+
+  const response = await fetch(`/api/music-data?${params}`);
+  const data = (await response.json()) as T;
+
+  return data;
+};
+
 function SongStats() {
   const [currentTab, setCurrentTab] = useState('topAlbums');
   const [topTracks, setTopTracks] = useState<TopTrack[]>([]);
@@ -37,29 +56,6 @@ function SongStats() {
   const [topAlbums, setTopAlbums] = useState<Album[]>([]);
   const [topArtists, setTopArtists] = useState<Artist[]>([]);
   const [stats, setStats] = useState<StatProps[]>([]);
-
-  const fetchSongData = useCallback(
-    async <T = unknown,>(
-      availableData:
-        | 'generalStats'
-        | 'playbackState'
-        | 'topAlbums'
-        | 'topArtists'
-        | 'topTracks',
-      period?: Periods,
-    ): Promise<T> => {
-      const params = new URLSearchParams({
-        data: availableData,
-        ...(period ? { period } : {}),
-      });
-
-      const response = await fetch(`/api/music-data?${params}`);
-      const data = (await response.json()) as T;
-
-      return data;
-    },
-    [],
-  );
 
   const getTopAlbums = useCallback(
     async (period: Periods = Periods.LAST_WEEK): Promise<void> => {
@@ -119,6 +115,8 @@ function SongStats() {
         setPlaybackState(data);
       }
     };
+
+    // setInterval(getPlaybackState, 10000);
 
     getTopTracks();
     getTopAlbums();
@@ -201,7 +199,7 @@ function SongStats() {
             <div
               id={s['previous-songs']}
               className="row overflow-auto"
-              style={{ maxHeight: 318 }}
+              style={{ maxHeight: 318, scrollBehavior: 'smooth' }}
             >
               {playbackState
                 ?.filter((_, index) => index !== 0)
@@ -247,6 +245,12 @@ function SongStats() {
 
       <div className="row">
         <div className="col">
+          <h3 className="text-center">Mais ouvidos</h3>
+        </div>
+      </div>
+
+      <div className="row">
+        <div className="col">
           <Tabs
             activeKey={currentTab}
             onSelect={(k) => setCurrentTab(k as string)}
@@ -258,7 +262,7 @@ function SongStats() {
                     source: 'albums',
                     setState: fetchDataPerPeriod,
                   }}
-                  items={topAlbums.map(album => ({
+                  items={topAlbums.map((album) => ({
                     header: album.name,
                     body: album.artist.name,
                     link: album.url,
@@ -279,7 +283,7 @@ function SongStats() {
                     source: 'artists',
                     setState: fetchDataPerPeriod,
                   }}
-                  items={topArtists.map(artist => ({
+                  items={topArtists.map((artist) => ({
                     header: artist.name,
                     link: artist.url,
                     image: {
@@ -299,7 +303,7 @@ function SongStats() {
                     source: 'tracks',
                     setState: fetchDataPerPeriod,
                   }}
-                  items={topTracks.map(track => ({
+                  items={topTracks.map((track) => ({
                     header: track.name,
                     body: track.artist.name,
                     link: track.url,
