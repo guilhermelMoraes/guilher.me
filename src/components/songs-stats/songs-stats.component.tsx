@@ -1,27 +1,13 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import { Badge, Tab, Tabs } from 'react-bootstrap';
 
+import formatUnixDate from '../../helpers/format-unix-date';
 import Card from '../card/card.component';
 import Periods from './periods.enum';
 import s from './song-stats.module.css';
 import type { Album, Artist, TopTrack, Track } from './song-stats.types';
 import Stat, { type StatProps } from './stat.component';
 import TopItems from './top-items';
-
-const formatUnixDate = (unixTs: number) => {
-  const date = new Date(unixTs * 1000);
-
-  const formatter = new Intl.DateTimeFormat('pt-BR', {
-    timeZone: 'America/Sao_Paulo',
-    day: '2-digit',
-    month: 'short',
-    year: 'numeric',
-    hour: 'numeric',
-    minute: '2-digit',
-  });
-
-  return formatter.format(date);
-};
 
 const podium: Record<string, string> = {
   '1': '🥇',
@@ -57,6 +43,10 @@ function SongStats() {
   const [topArtists, setTopArtists] = useState<Artist[]>([]);
   const [stats, setStats] = useState<StatProps[]>([]);
 
+  const [playbackVisible, setPlaybackVisible] = useState(true);
+
+  const playbackWrapper = useRef<HTMLDivElement | null>(null);
+
   const getTopAlbums = useCallback(
     async (period: Periods = Periods.LAST_WEEK): Promise<void> => {
       const data = await fetchSongData<Album[]>('topAlbums', period);
@@ -87,45 +77,74 @@ function SongStats() {
     [],
   );
 
+  const getGeneralStats = useCallback(async (): Promise<void> => {
+    const data = await fetchSongData<StatProps[]>('generalStats');
+
+    if (data) {
+      setStats(data);
+    }
+  }, []);
+
+  const getPlaybackState = useCallback(async (): Promise<void> => {
+    const data = await fetchSongData<Track[]>('playbackState');
+    if (data) {
+      setPlaybackState(data);
+    }
+  }, []);
+
   const fetchDataPerPeriod = useCallback(
     async (source: 'albums' | 'tracks' | 'artists', period: Periods) => {
-      const updateData = {
-        albums: async () => await getTopAlbums(period),
-        artists: async () => await getTopArtists(period),
-        tracks: async () => await getTopTracks(period),
+      const fetchers = {
+        albums: getTopAlbums,
+        artists: getTopArtists,
+        tracks: getTopTracks,
       };
 
-      updateData[source]();
+      fetchers[source](period);
     },
-    [],
+    [getTopAlbums, getTopArtists, getTopTracks],
   );
 
   useEffect(() => {
-    const getGeneralStats = async (): Promise<void> => {
-      const data = await fetchSongData<StatProps[]>('generalStats');
-
-      if (data) {
-        setStats(data);
-      }
+    const fetchSongsData = () => {
+      getTopTracks();
+      getTopAlbums();
+      getTopArtists();
+      getGeneralStats();
+      getPlaybackState();
     };
 
-    const getPlaybackState = async (): Promise<void> => {
-      const data = await fetchSongData<Track[]>('playbackState');
-      if (data) {
-        setPlaybackState(data);
-      }
-    };
-
-    // setInterval(getPlaybackState, 10000);
-
-    getTopTracks();
-    getTopAlbums();
-    getTopArtists();
-    getGeneralStats();
-    getPlaybackState();
+    fetchSongsData();
   }, []);
 
+  useEffect(() => {
+    const { current } = playbackWrapper;
+    if (!current) return;
+
+    const observer = new IntersectionObserver(([entry]) =>
+      setPlaybackVisible(entry.isIntersecting),
+    );
+
+    observer.observe(current);
+
+    return () => observer.disconnect();
+  }, [playbackState.length]);
+
+  // useEffect(() => {
+  //   if (!playbackVisible) return;
+
+  //   const interval = setInterval(async () => {
+  //     await getPlaybackState();
+  //     await getGeneralStats();
+  //   }, 10000);
+
+  //   return () => clearInterval(interval);
+  // }, [playbackVisible]);
+
   const track = playbackState?.at(0) as Track;
+
+  const hasStats =
+    topTracks.length > 0 || topArtists.length > 0 || topAlbums.length > 0;
 
   return (
     <section className="container">
@@ -141,8 +160,12 @@ function SongStats() {
           )}
         </div>
       </div>
+
       {playbackState.length > 0 && (
-        <div className="row gx-2 mb-4">
+        <div
+          className="row gx-2 mb-4"
+          ref={playbackWrapper}
+        >
           <div
             className="col-12 col-lg-7 mb-2 mb-lg-0"
             style={{ maxHeight: 318 }}
@@ -197,7 +220,6 @@ function SongStats() {
 
           <div className="col-12 col-lg-5 position-relative">
             <div
-              id={s['previous-songs']}
               className="row overflow-auto"
               style={{ maxHeight: 318, scrollBehavior: 'smooth' }}
             >
@@ -235,7 +257,7 @@ function SongStats() {
                 ))}
 
               <div
-                id={s['previous-songs__gradient']}
+                id={s['gradient']}
                 className="position-absolute bottom-0 start-0 end-0"
               />
             </div>
@@ -243,82 +265,79 @@ function SongStats() {
         </div>
       )}
 
-      <div className="row">
-        <div className="col">
-          <h3 className="text-center">Mais ouvidos</h3>
-        </div>
-      </div>
+      {hasStats && (
+        <>
+          <div className="row">
+            <div className="col">
+              <h3 className="text-center">Mais ouvidos</h3>
+            </div>
+          </div>
+          <div className="row">
+            <div className="col">
+              <Tabs
+                activeKey={currentTab}
+                onSelect={(k) => setCurrentTab(k as string)}
+              >
+                <Tab eventKey="topAlbums" title="Álbuns" className="py-3">
+                  <TopItems
+                    periodSelector={{
+                      source: 'albums',
+                      setState: fetchDataPerPeriod,
+                    }}
+                    items={topAlbums.map((album) => ({
+                      header: album.name,
+                      body: album.artist.name,
+                      link: album.url,
+                      image: {
+                        src: album.image[2]['#text'],
+                        alt: `Album cover for ${album.name}`,
+                      },
+                      topPill: `Tocado ${album.playcount} vezes ${podium[album['@attr'].rank] ?? '⭐'}`,
+                    }))}
+                  />
+                </Tab>
 
-      <div className="row">
-        <div className="col">
-          <Tabs
-            activeKey={currentTab}
-            onSelect={(k) => setCurrentTab(k as string)}
-          >
-            {topAlbums.length > 0 && (
-              <Tab eventKey="topAlbums" title="Álbuns" className="py-3">
-                <TopItems
-                  periodSelector={{
-                    source: 'albums',
-                    setState: fetchDataPerPeriod,
-                  }}
-                  items={topAlbums.map((album) => ({
-                    header: album.name,
-                    body: album.artist.name,
-                    link: album.url,
-                    image: {
-                      src: album.image[2]['#text'],
-                      alt: `Album cover for ${album.name}`,
-                    },
-                    topPill: `Tocado ${album.playcount} vezes ${podium[album['@attr'].rank] ?? '⭐'}`,
-                  }))}
-                />
-              </Tab>
-            )}
+                <Tab eventKey="topArtists" title="Artistas" className="py-3">
+                  <TopItems
+                    periodSelector={{
+                      source: 'artists',
+                      setState: fetchDataPerPeriod,
+                    }}
+                    items={topArtists.map((artist) => ({
+                      header: artist.name,
+                      link: artist.url,
+                      image: {
+                        src: artist.image[2]['#text'],
+                        alt: `Album cover for ${artist.name}`,
+                      },
+                      topPill: `Tocado ${artist.playcount} vezes ${podium[artist['@attr'].rank] ?? '⭐'}`,
+                    }))}
+                  />
+                </Tab>
 
-            {topArtists.length > 0 && (
-              <Tab eventKey="topArtists" title="Artistas" className="py-3">
-                <TopItems
-                  periodSelector={{
-                    source: 'artists',
-                    setState: fetchDataPerPeriod,
-                  }}
-                  items={topArtists.map((artist) => ({
-                    header: artist.name,
-                    link: artist.url,
-                    image: {
-                      src: artist.image[2]['#text'],
-                      alt: `Album cover for ${artist.name}`,
-                    },
-                    topPill: `Tocado ${artist.playcount} vezes ${podium[artist['@attr'].rank] ?? '⭐'}`,
-                  }))}
-                />
-              </Tab>
-            )}
-
-            {topTracks.length > 0 && (
-              <Tab eventKey="topTracks" title="Músicas" className="py-3">
-                <TopItems
-                  periodSelector={{
-                    source: 'tracks',
-                    setState: fetchDataPerPeriod,
-                  }}
-                  items={topTracks.map((track) => ({
-                    header: track.name,
-                    body: track.artist.name,
-                    link: track.url,
-                    image: {
-                      src: track.image[2]['#text'],
-                      alt: `Album cover for ${track.name}`,
-                    },
-                    topPill: `Tocada ${track.playcount} vezes ${podium[track['@attr'].rank] ?? '⭐'}`,
-                  }))}
-                />
-              </Tab>
-            )}
-          </Tabs>
-        </div>
-      </div>
+                <Tab eventKey="topTracks" title="Músicas" className="py-3">
+                  <TopItems
+                    periodSelector={{
+                      source: 'tracks',
+                      setState: fetchDataPerPeriod,
+                    }}
+                    items={topTracks.map((track) => ({
+                      header: track.name,
+                      body: track.artist.name,
+                      link: track.url,
+                      image: {
+                        src: track.image[2]['#text'],
+                        alt: `Album cover for ${track.name}`,
+                      },
+                      topPill: `Tocada ${track.playcount} vezes ${podium[track['@attr'].rank] ?? '⭐'}`,
+                    }))}
+                  />
+                </Tab>
+              </Tabs>
+            </div>
+          </div>
+        </>
+      )}
     </section>
   );
 }

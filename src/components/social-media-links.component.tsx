@@ -82,14 +82,14 @@ function SocialMediaLinks() {
     : 'professional';
 
   return (
-    <div>
+    <div className="d-flex align-items-center justify-content-center flex-column">
       <Form.Switch
         id="links-switch"
         label={linkSwitch ? 'Pessoal' : 'Profissional'}
         onChange={(e) => setLinkSwitch(e.target.checked)}
         checked={linkSwitch}
       />
-      <div className="d-flex gap-4">
+      <div className="d-flex gap-4 flex-wrap align-items-center justify-content-center">
         {socialMedias[typeOfLink].map(({ href, icon, title }) => (
           <a
             key={href}
