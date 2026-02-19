@@ -130,16 +130,16 @@ function SongStats() {
     return () => observer.disconnect();
   }, [playbackState.length]);
 
-  // useEffect(() => {
-  //   if (!playbackVisible) return;
+  useEffect(() => {
+    if (!playbackVisible) return;
 
-  //   const interval = setInterval(async () => {
-  //     await getPlaybackState();
-  //     await getGeneralStats();
-  //   }, 10000);
+    const interval = setInterval(async () => {
+      await getPlaybackState();
+      await getGeneralStats();
+    }, 10000);
 
-  //   return () => clearInterval(interval);
-  // }, [playbackVisible]);
+    return () => clearInterval(interval);
+  }, [playbackVisible]);
 
   const track = playbackState?.at(0) as Track;
 

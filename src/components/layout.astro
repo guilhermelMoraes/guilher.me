@@ -20,7 +20,7 @@ const { title } = Astro.props;
     <meta name="viewport" content="width=device-width" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
-    <title>{title}</title>
+    <title>{title} — guilher.me</title>
   </head>
   <body>
     <header class="z-1 container position-sticky top-0 start-0 right-0 bg-body">
@@ -36,15 +36,12 @@ const { title } = Astro.props;
       <slot />
     </main>
     <div class="container">
-      <div class="row border-top">
-        <footer class="col py-4">
-          <p class="mb-0 text-truncate">
-            Desenhado e desenvolvido por Guilherme, em 2026 — <span>
-              v{packageJson.version}
-            </span>
-          </p>
-        </footer>
-      </div>
+      <footer class="row border-top py-4">
+        <div class="col d-flex flex-wrap align-items-center justify-content-between">
+          <p class="mb-0 text-truncate">Desenhado e desenvolvido por Guilherme, em 2026 — <span>v{packageJson.version}</p>
+            <a href="/about-this-blog" class="text-truncate">Sobre este blog</a>
+        </div>
+      </footer>
     </div>
   </body>
 </html>
