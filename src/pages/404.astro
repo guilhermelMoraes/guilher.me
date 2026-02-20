@@ -2,15 +2,14 @@
 import { Image } from 'astro:assets';
 
 import alien from '../images/by-jason-clarke-giphy.gif';
-import Layout from "../components/layout.astro";
+import Layout from '../components/layout.astro';
 ---
+
 <Layout title="Página não encontrada">
   <div class="container">
     <section class="row">
       <div class="col">
-        <h1 class="text-center">
-          Ops! Não há nada aqui.
-        </h1>
+        <h1 class="text-center">Ops! Não há nada aqui.</h1>
         <Image
           src={alien}
           class="d-block my-4 mx-auto rounded shadow img-fluid"
@@ -18,9 +17,7 @@ import Layout from "../components/layout.astro";
           alt="https://giphy.com/jasonclarke"
         />
         <a href="/" class="text-center">
-          <h2>
-            Voltar
-          </h2>
+          <h2>Voltar</h2>
         </a>
       </div>
     </section>

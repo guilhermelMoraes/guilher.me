@@ -1,13 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
-import { Badge, Tab, Tabs } from 'react-bootstrap';
+import { useCallback, useEffect, useState } from 'react';
+import { Tab, Tabs } from 'react-bootstrap';
 
-import formatUnixDate from '../../helpers/format-unix-date';
-import Card from '../card/card.component';
 import Periods from './periods.enum';
-import s from './song-stats.module.css';
+import PlaybackStatus from '../music-data/playback-status/playback-status.component';
 import type { Album, Artist, TopTrack, Track } from './song-stats.types';
 import Stat, { type StatProps } from './stat.component';
 import TopItems from './top-items';
+import MusicStats from '../music-data/music-stats';
 
 const podium: Record<string, string> = {
   '1': '🥇',
@@ -44,8 +43,6 @@ function SongStats() {
   const [stats, setStats] = useState<StatProps[]>([]);
 
   const [playbackVisible, setPlaybackVisible] = useState(true);
-
-  const playbackWrapper = useRef<HTMLDivElement | null>(null);
 
   const getTopAlbums = useCallback(
     async (period: Periods = Periods.LAST_WEEK): Promise<void> => {
@@ -117,31 +114,16 @@ function SongStats() {
     fetchSongsData();
   }, []);
 
-  useEffect(() => {
-    const { current } = playbackWrapper;
-    if (!current) return;
+  // useEffect(() => {
+  //   if (!playbackVisible) return;
 
-    const observer = new IntersectionObserver(([entry]) =>
-      setPlaybackVisible(entry.isIntersecting),
-    );
+  //   const interval = setInterval(async () => {
+  //     await getPlaybackState();
+  //     await getGeneralStats();
+  //   }, 10000);
 
-    observer.observe(current);
-
-    return () => observer.disconnect();
-  }, [playbackState.length]);
-
-  useEffect(() => {
-    if (!playbackVisible) return;
-
-    const interval = setInterval(async () => {
-      await getPlaybackState();
-      await getGeneralStats();
-    }, 10000);
-
-    return () => clearInterval(interval);
-  }, [playbackVisible]);
-
-  const track = playbackState?.at(0) as Track;
+  //   return () => clearInterval(interval);
+  // }, [playbackVisible]);
 
   const hasStats =
     topTracks.length > 0 || topArtists.length > 0 || topAlbums.length > 0;
@@ -161,109 +143,8 @@ function SongStats() {
         </div>
       </div>
 
-      {playbackState.length > 0 && (
-        <div
-          className="row gx-2 mb-4"
-          ref={playbackWrapper}
-        >
-          <div
-            className="col-12 col-lg-7 mb-2 mb-lg-0"
-            style={{ maxHeight: 318 }}
-          >
-            {track && (
-              <Card
-                topPill={
-                  <>
-                    {track?.['@attr']?.nowplaying && (
-                      <Badge
-                        bg="danger"
-                        className="d-flex align-items-center mb-1"
-                        style={{ maxWidth: '170px' }}
-                      >
-                        <h6 className="text-truncate m-0 flex-grow-1">
-                          Ouvindo agora
-                        </h6>
-                        <span id={s['bars']} className="ms-1 flex-shrink-0">
-                          <span />
-                          <span />
-                          <span />
-                          <span />
-                        </span>
-                      </Badge>
-                    )}
-                    {track?.date && (
-                      <Badge
-                        className="d-flex align-items-center mb-1"
-                        bg="secondary"
-                      >
-                        <h6 className="text-truncate m-0 flex-grow-1">
-                          {formatUnixDate(Number.parseInt(track?.date.uts))}
-                        </h6>
-                      </Badge>
-                    )}
-                  </>
-                }
-                header={track.name}
-                body={track.artist['#text']}
-                image={{
-                  src: track.image.at(-1)?.['#text'] as string,
-                  alt: `Album cover for ${track.album['#text']}`,
-                  maxSize: {
-                    width: 300,
-                    height: 300,
-                  },
-                }}
-                link={track.url}
-              />
-            )}
-          </div>
-
-          <div className="col-12 col-lg-5 position-relative">
-            <div
-              className="row overflow-auto"
-              style={{ maxHeight: 318, scrollBehavior: 'smooth' }}
-            >
-              {playbackState
-                ?.filter((_, index) => index !== 0)
-                .map((track, index) => (
-                  <div key={`${index}-${track.url}`} className="mb-2">
-                    <Card
-                      topPill={
-                        <>
-                          {track?.date && (
-                            <Badge
-                              className="d-flex align-items-center mb-1"
-                              bg="secondary"
-                              style={{ maxWidth: '200px' }}
-                            >
-                              <p className="mb-0 text-truncate">
-                                {formatUnixDate(
-                                  Number.parseInt(track?.date.uts),
-                                )}
-                              </p>
-                            </Badge>
-                          )}
-                        </>
-                      }
-                      header={track.name}
-                      body={track.artist['#text']}
-                      image={{
-                        src: track.image.at(-1)?.['#text'] as string,
-                        alt: `Album cover for ${track?.name}`,
-                      }}
-                      link={track.url}
-                    />
-                  </div>
-                ))}
-
-              <div
-                id={s['gradient']}
-                className="position-absolute bottom-0 start-0 end-0"
-              />
-            </div>
-          </div>
-        </div>
-      )}
+      <MusicStats />
+      <PlaybackStatus />
 
       {hasStats && (
         <>

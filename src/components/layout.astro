@@ -37,9 +37,17 @@ const { title } = Astro.props;
     </main>
     <div class="container">
       <footer class="row border-top py-4">
-        <div class="col d-flex flex-wrap align-items-center justify-content-between">
-          <p class="mb-0 text-truncate">Desenhado e desenvolvido por Guilherme, em 2026 — <span>v{packageJson.version}</p>
-            <a href="/about-this-blog" class="text-truncate">Sobre este blog</a>
+        <div
+          class="col d-flex flex-wrap align-items-center justify-content-between"
+        >
+          <a href="/blog/about-this-blog" class="text-truncate"
+            >Sobre este blog</a
+          >
+          <p class="mb-0 text-truncate">
+            Desenhado e desenvolvido por Guilherme, em 2026 — <span
+              >v{packageJson.version}</span
+            >
+          </p>
         </div>
       </footer>
     </div>

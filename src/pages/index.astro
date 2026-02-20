@@ -5,11 +5,12 @@ import Layout from '../components/layout.astro';
 import SocialMediaLinks from '../components/social-media-links.component';
 import profilePic from '../images/profile-picture.jpeg';
 
-
 import SongsStats from '../components/songs-stats/songs-stats.component';
+import PlaybackStatus from '../components/music-data/playback-status/playback-status.component';
+import MusicStats from '../components/music-data/music-stats';
 ---
 
-<Layout title="guilher.me">
+<Layout title="Início">
   <div class="container">
     <div class="row">
       <section class="col">
@@ -40,5 +41,15 @@ import SongsStats from '../components/songs-stats/songs-stats.component';
       </section>
     </div>
   </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col">
+        <MusicStats server:defer client:load />
+      </div>
+    </div>
+  </div>
+
+
   <SongsStats server:defer client:visible />
 </Layout>
