@@ -1,12 +1,9 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
 
-import Periods from './periods.enum';
-import PlaybackStatus from '../music-data/playback-status/playback-status.component';
-import type { Album, Artist, TopTrack, Track } from './song-stats.types';
-import Stat, { type StatProps } from './stat.component';
+import Periods from './types/periods.enum';
+import type { Album, Artist, TopTrack } from './types/music.types';
 import TopItems from './top-items';
-import MusicStats from '../music-data/music-stats';
 
 const podium: Record<string, string> = {
   '1': '🥇',
@@ -34,15 +31,11 @@ const fetchSongData = async <T = unknown,>(
   return data;
 };
 
-function SongStats() {
+export default function TopMusicMetrics() {
   const [currentTab, setCurrentTab] = useState('topAlbums');
   const [topTracks, setTopTracks] = useState<TopTrack[]>([]);
-  const [playbackState, setPlaybackState] = useState<Track[]>([]);
   const [topAlbums, setTopAlbums] = useState<Album[]>([]);
   const [topArtists, setTopArtists] = useState<Artist[]>([]);
-  const [stats, setStats] = useState<StatProps[]>([]);
-
-  const [playbackVisible, setPlaybackVisible] = useState(true);
 
   const getTopAlbums = useCallback(
     async (period: Periods = Periods.LAST_WEEK): Promise<void> => {
@@ -74,21 +67,6 @@ function SongStats() {
     [],
   );
 
-  const getGeneralStats = useCallback(async (): Promise<void> => {
-    const data = await fetchSongData<StatProps[]>('generalStats');
-
-    if (data) {
-      setStats(data);
-    }
-  }, []);
-
-  const getPlaybackState = useCallback(async (): Promise<void> => {
-    const data = await fetchSongData<Track[]>('playbackState');
-    if (data) {
-      setPlaybackState(data);
-    }
-  }, []);
-
   const fetchDataPerPeriod = useCallback(
     async (source: 'albums' | 'tracks' | 'artists', period: Periods) => {
       const fetchers = {
@@ -107,45 +85,16 @@ function SongStats() {
       getTopTracks();
       getTopAlbums();
       getTopArtists();
-      getGeneralStats();
-      getPlaybackState();
     };
 
     fetchSongsData();
   }, []);
-
-  // useEffect(() => {
-  //   if (!playbackVisible) return;
-
-  //   const interval = setInterval(async () => {
-  //     await getPlaybackState();
-  //     await getGeneralStats();
-  //   }, 10000);
-
-  //   return () => clearInterval(interval);
-  // }, [playbackVisible]);
 
   const hasStats =
     topTracks.length > 0 || topArtists.length > 0 || topAlbums.length > 0;
 
   return (
     <section className="container">
-      <div className="row mb-4">
-        <div className="col">
-          <h2 className="text-center">Minhas músicas 🎧</h2>
-          {stats.length > 0 && (
-            <div className="row">
-              {stats.map(({ label, value }) => (
-                <Stat key={label} label={label} value={value} />
-              ))}
-            </div>
-          )}
-        </div>
-      </div>
-
-      <MusicStats />
-      <PlaybackStatus />
-
       {hasStats && (
         <>
           <div className="row">
@@ -222,5 +171,3 @@ function SongStats() {
     </section>
   );
 }
-
-export default SongStats;

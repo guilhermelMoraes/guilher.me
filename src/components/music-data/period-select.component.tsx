@@ -1,6 +1,6 @@
 import { Form } from 'react-bootstrap';
 
-import Periods from './periods.enum';
+import Periods from './types/periods.enum';
 
 type Sources = 'albums' | 'tracks' | 'artists';
 

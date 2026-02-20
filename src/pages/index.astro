@@ -5,9 +5,9 @@ import Layout from '../components/layout.astro';
 import SocialMediaLinks from '../components/social-media-links.component';
 import profilePic from '../images/profile-picture.jpeg';
 
-import SongsStats from '../components/songs-stats/songs-stats.component';
+import SongsStats from '../components/music-data/top-music-metrics.component';
 import PlaybackStatus from '../components/music-data/playback-status/playback-status.component';
-import MusicStats from '../components/music-data/music-stats';
+import OverviewStats from '../components/music-data/overview-stats';
 ---
 
 <Layout title="Início">
@@ -42,14 +42,8 @@ import MusicStats from '../components/music-data/music-stats';
     </div>
   </div>
 
-  <div class="container">
-    <div class="row">
-      <div class="col">
-        <MusicStats server:defer client:load />
-      </div>
-    </div>
-  </div>
-
-
+  <h2 class="text-center">Minhas músicas 🎧</h2>
+  <OverviewStats server:defer client:load />
+  <PlaybackStatus server:defer client:visible />
   <SongsStats server:defer client:visible />
 </Layout>
