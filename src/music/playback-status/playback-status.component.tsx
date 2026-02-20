@@ -1,34 +1,15 @@
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { Badge } from 'react-bootstrap';
 
-import formatUnixDate from '../../../helpers/format-unix-date';
-import Card from '../../card/card.component';
-import type Periods from '../types/periods.enum';
+import formatUnixDate from '../../helpers/format-unix-date';
+import Card from '../../components/card/card.component';
 import type { Track } from '../types/music.types';
 import s from './playback-status.module.css';
-import useIsVisible from '../../../hooks/use-is-visible.hook';
+import useIsVisible from '../../hooks/use-is-visible.hook';
+import fetchSongData from '../fetch-song-data.service';
+import HOCWithSuspense from '../../hoc/with-suspense';
 
-const fetchSongData = async <T = unknown,>(
-  availableData:
-    | 'generalStats'
-    | 'playbackState'
-    | 'topAlbums'
-    | 'topArtists'
-    | 'topTracks',
-  period?: Periods,
-): Promise<T> => {
-  const params = new URLSearchParams({
-    data: availableData,
-    ...(period ? { period } : {}),
-  });
-
-  const response = await fetch(`/api/music-data?${params}`);
-  const data = (await response.json()) as T;
-
-  return data;
-};
-
-export default function PlaybackStatus() {
+function PlaybackStatus() {
   const [playbackState, setPlaybackState] = useState<Track[]>([]);
 
   const playbackWrapper = useRef<HTMLDivElement | null>(null);
@@ -45,21 +26,21 @@ export default function PlaybackStatus() {
     getPlaybackState();
   }, []);
 
-  useEffect(() => {
-    if (!playbackVisible) return;
+  // useEffect(() => {
+  //   if (!playbackVisible) return;
 
-    const interval = setInterval(async () => {
-      await getPlaybackState();
-    }, 10000);
+  //   const interval = setInterval(async () => {
+  //     await getPlaybackState();
+  //   }, 10000);
 
-    return () => clearInterval(interval);
-  }, [playbackVisible]);
+  //   return () => clearInterval(interval);
+  // }, [playbackVisible]);
 
   const track = playbackState?.at(0) as Track;
 
   return (
     <section className="container">
-      <div className="row mb-4" ref={playbackWrapper}>
+      <div className="row gx-2" ref={playbackWrapper}>
         <div
           className="col-12 col-lg-7 mb-2 mb-lg-0"
           style={{ maxHeight: 318 }}
@@ -158,3 +139,51 @@ export default function PlaybackStatus() {
     </section>
   );
 }
+
+export function PlaybackStatusFallback() {
+  return (
+    <section className="container">
+      <div className="row gx-2">
+        <div className="col-12 col-lg-7 mb-2 mb-lg-0">
+          <Card mode="placeholder" />
+        </div>
+
+        <div className="col-12 col-lg-5 position-relative">
+          <div
+            className="row overflow-auto"
+            style={{ maxHeight: 318, scrollBehavior: 'smooth' }}
+          >
+            <div className="mb-2">
+              <Card mode="placeholder" />
+            </div>
+            <div className="mb-2">
+              <Card mode="placeholder" />
+            </div>
+            <div className="mb-2">
+              <Card mode="placeholder" />
+            </div>
+            <div className="mb-2">
+              <Card mode="placeholder" />
+            </div>
+            <div className="mb-2">
+              <Card mode="placeholder" />
+            </div>
+            <div className="mb-2">
+              <Card mode="placeholder" />
+            </div>
+            <div className="mb-2">
+              <Card mode="placeholder" />
+            </div>
+
+            <div
+              id={s['gradient']}
+              className="position-absolute bottom-0 start-0 end-0"
+            />
+          </div>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+export default HOCWithSuspense(PlaybackStatus, PlaybackStatusFallback);

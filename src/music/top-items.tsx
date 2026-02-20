@@ -1,7 +1,7 @@
 import { Badge } from 'react-bootstrap';
 
-import type { CardProps } from '../card/card.component';
-import Card from '../card/card.component';
+import type { CardProps } from '../components/card/card.component';
+import Card from '../components/card/card.component';
 import PeriodSelect, {
   type PeriodSelectProps,
 } from './period-select.component';
@@ -13,7 +13,7 @@ type TopItemsProps = {
 
 export default function TopItems({ items, periodSelector }: TopItemsProps) {
   return (
-    <div className="container-fluid px-0">
+    <div className="container-fluid">
       <div className="row">
         <div className="col-12 col-md-4 col-lg-3">
           <PeriodSelect

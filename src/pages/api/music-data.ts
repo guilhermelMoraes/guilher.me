@@ -5,7 +5,7 @@ import {
   SONGS_STATS_USER,
 } from 'astro:env/server';
 
-import type Periods from '../../components/music-data/types/periods.enum';
+import type Periods from '../../music/types/periods.enum';
 
 const commonParams = {
   user: SONGS_STATS_USER,

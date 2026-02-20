@@ -65,3 +65,8 @@ export type Artist = {
     rank: string;
   };
 };
+
+export type Stat = {
+  label: string;
+  value: string;
+};

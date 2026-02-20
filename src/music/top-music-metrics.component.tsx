@@ -105,6 +105,7 @@ export default function TopMusicMetrics() {
           <div className="row">
             <div className="col">
               <Tabs
+                fill
                 activeKey={currentTab}
                 onSelect={(k) => setCurrentTab(k as string)}
               >
