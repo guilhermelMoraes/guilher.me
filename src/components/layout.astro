@@ -32,7 +32,7 @@ const { title } = Astro.props;
         </div>
       </div>
     </header>
-    <main>
+    <main class="my-3">
       <slot />
     </main>
     <div class="container">
@@ -40,8 +40,9 @@ const { title } = Astro.props;
         <div
           class="col d-flex flex-wrap align-items-center justify-content-between"
         >
-          <a href="/blog/about-this-blog" class="text-truncate"
-            >Sobre este blog</a
+          <a
+            href="/blog/about-this-blog"
+            class="text-truncate text-decoration-none">Sobre este blog</a
           >
           <p class="mb-0 text-truncate">
             Desenhado e desenvolvido por Guilherme, em 2026 — <span

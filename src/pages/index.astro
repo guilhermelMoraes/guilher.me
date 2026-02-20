@@ -4,18 +4,15 @@ import { Image } from 'astro:assets';
 import Layout from '../components/layout.astro';
 import SocialMediaLinks from '../components/social-media-links.component';
 import profilePic from '../images/profile-picture.jpeg';
-
-import SongsStats from '../components/music-data/top-music-metrics.component';
-import PlaybackStatus from '../components/music-data/playback-status/playback-status.component';
-import OverviewStats from '../components/music-data/overview-stats';
+import MusicData from '../components/music-data';
 ---
 
 <Layout title="Início">
-  <div class="container">
+  <section class="container">
     <div class="row">
-      <section class="col">
+      <div class="col">
         <div class="row">
-          <div class="d-flex col-12 col-lg-5 col-xl-4 mb-3 mb-lg-0">
+          <div class="d-flex col-12 col-lg-5 col-xl-3 mb-3 mb-lg-0">
             <Image
               src={profilePic}
               alt="It's a me!"
@@ -23,8 +20,8 @@ import OverviewStats from '../components/music-data/overview-stats';
               loading="eager"
             />
           </div>
-          <div class="col-12 col-lg-7 col-xl-8">
-            <h2>Sobre mim</h2>
+          <div class="col-12 col-lg-7 col-xl-9">
+            <h2 class="text-center">Sobre mim</h2>
             <p class="txt-justify">
               Olá! Meu nome é Guilherme e este é meu domínio na internet. Sou
               desenvolvedor de software e nerd, então ter meu próprio espaço na
@@ -38,12 +35,8 @@ import OverviewStats from '../components/music-data/overview-stats';
             <SocialMediaLinks client:load />
           </div>
         </div>
-      </section>
+      </div>
     </div>
-  </div>
-
-  <h2 class="text-center">Minhas músicas 🎧</h2>
-  <OverviewStats server:defer client:load />
-  <PlaybackStatus server:defer client:visible />
-  <SongsStats server:defer client:visible />
+  </section>
+  <MusicData client:only="react" />
 </Layout>
