@@ -1,42 +1,36 @@
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { use, useEffect, useRef, useState } from 'react';
 import { Badge } from 'react-bootstrap';
 
-import formatUnixDate from '../../helpers/format-unix-date';
 import Card from '../../components/card/card.component';
-import type { Track } from '../types/music.types';
-import s from './playback-status.module.css';
+import formatUnixDate from '../../helpers/format-unix-date';
+import makeFallbackArray from '../../helpers/make-fallback-array';
+import HOCWithSuspense from '../../hoc/with-suspense';
 import useIsVisible from '../../hooks/use-is-visible.hook';
 import fetchSongData from '../fetch-song-data.service';
-import HOCWithSuspense from '../../hoc/with-suspense';
+import type { Track } from '../types/music.types';
+import s from './playback-status.module.css';
+
+const FIFTEEN_SECONDS = 15000;
+const initialPlaybackPromise = fetchSongData<Track[]>('playbackState');
 
 function PlaybackStatus() {
-  const [playbackState, setPlaybackState] = useState<Track[]>([]);
-
+  const initialPlaybackStatus = use(initialPlaybackPromise);
+  const [playbackState, setPlaybackState] = useState<Track[]>(initialPlaybackStatus);
+  
   const playbackWrapper = useRef<HTMLDivElement | null>(null);
-  const playbackVisible = useIsVisible(playbackWrapper, [playbackState.length]);
-
-  const getPlaybackState = useCallback(async (): Promise<void> => {
-    const data = await fetchSongData<Track[]>('playbackState');
-    if (data) {
-      setPlaybackState(data);
-    }
-  }, []);
+  const playbackVisible = useIsVisible(playbackWrapper);
 
   useEffect(() => {
-    getPlaybackState();
-  }, []);
+    if (!playbackVisible) return;
 
-  // useEffect(() => {
-  //   if (!playbackVisible) return;
+    const interval = setInterval(async () => {
+      setPlaybackState(await fetchSongData<Track[]>('playbackState'));
+    }, FIFTEEN_SECONDS);
 
-  //   const interval = setInterval(async () => {
-  //     await getPlaybackState();
-  //   }, 10000);
+    return () => clearInterval(interval);
+  }, [playbackVisible]);
 
-  //   return () => clearInterval(interval);
-  // }, [playbackVisible]);
-
-  const track = playbackState?.at(0) as Track;
+  const track = playbackState?.at(0);
 
   return (
     <section className="container">
@@ -53,7 +47,7 @@ function PlaybackStatus() {
                     <Badge
                       bg="danger"
                       className="d-flex align-items-center mb-1"
-                      style={{ maxWidth: '170px' }}
+                      style={{ maxWidth: 170 }}
                     >
                       <h6 className="text-truncate m-0 flex-grow-1">
                         Ouvindo agora
@@ -145,7 +139,7 @@ export function PlaybackStatusFallback() {
     <section className="container">
       <div className="row gx-2">
         <div className="col-12 col-lg-7 mb-2 mb-lg-0">
-          <Card mode="placeholder" />
+          <Card mode="placeholder" fallbackProps={{ image: { height: 300, width: 300 } }} />
         </div>
 
         <div className="col-12 col-lg-5 position-relative">
@@ -153,27 +147,11 @@ export function PlaybackStatusFallback() {
             className="row overflow-auto"
             style={{ maxHeight: 318, scrollBehavior: 'smooth' }}
           >
-            <div className="mb-2">
-              <Card mode="placeholder" />
-            </div>
-            <div className="mb-2">
-              <Card mode="placeholder" />
-            </div>
-            <div className="mb-2">
-              <Card mode="placeholder" />
-            </div>
-            <div className="mb-2">
-              <Card mode="placeholder" />
-            </div>
-            <div className="mb-2">
-              <Card mode="placeholder" />
-            </div>
-            <div className="mb-2">
-              <Card mode="placeholder" />
-            </div>
-            <div className="mb-2">
-              <Card mode="placeholder" />
-            </div>
+            {makeFallbackArray(15).map((key) => (
+              <div className="mb-2" key={key}>
+                <Card mode="placeholder" />
+              </div>
+            ))}
 
             <div
               id={s['gradient']}

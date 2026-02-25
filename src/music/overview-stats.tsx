@@ -5,6 +5,7 @@ import HOCWithSuspense from '../hoc/with-suspense';
 import fetchSongData from './fetch-song-data.service';
 import type { Stat } from './types/music.types';
 import useIsVisible from '../hooks/use-is-visible.hook';
+import makeFallbackArray from '../helpers/make-fallback-array';
 
 const FIFTEEN_SECONDS = 15000;
 const initialStatsPromise = fetchSongData<Stat[]>('generalStats');
@@ -63,12 +64,10 @@ function OverviewStatsFallback() {
     </div>
   );
 
-  const fourStatsFallback = [...new Array(4).keys()];
-
   return (
     <section className="container">
       <div className="row">
-        {fourStatsFallback.map((value) => (
+        {makeFallbackArray(4).map((value) => (
           <Fragment key={value}>{fallbackStat}</Fragment>
         ))}
       </div>

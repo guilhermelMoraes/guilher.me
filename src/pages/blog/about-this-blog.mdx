@@ -1,9 +1,23 @@
 ---
-title: 'Astro in brief'
+title: 'Sobre este blog'
 author: 'Himanshu'
 description: 'Find out what makes Astro awesome!'
 ---
 
 import Layout from '../../components/layout.astro';
 
-<Layout title={frontmatter.title}>teste</Layout>
+<Layout title={frontmatter.title}>
+  <section class="container">
+    <div class="row">
+      <div class="col">
+        ## Sobre este blog
+
+        ### Motivação
+
+        Faz muito tempo que tenho vontade criar meu próprio espaço na internet, mas nunca o concretizei. Antes dessa,
+        já fiz várias tentativas, mas sempre acabei abandonando. Este blog mesmo, para ser sincero, eu não sei se vai para a frente.
+        Se alguém estiver lendo isso, é sinal de que deu certo.
+      </div>
+    </div>
+  </section>
+</Layout>

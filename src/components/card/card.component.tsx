@@ -16,6 +16,7 @@ export type CardProps = {
     };
   };
   readonly mode?: 'content' | 'placeholder';
+  readonly fallbackProps?: CardFallbackProps;
 };
 
 export default function Card({
@@ -25,6 +26,7 @@ export default function Card({
   body,
   link,
   mode = 'content',
+  fallbackProps,
 }: CardProps) {
   const [hasError, setHasError] = useState(false);
 
@@ -80,21 +82,52 @@ export default function Card({
       </div>
     </div>
   ) : (
-    <CardFallback />
+    <CardFallback {...fallbackProps} />
   );
 }
 
-function CardFallback({ image }: CardProps) {
+type CardFallbackProps = {
+  readonly image?: {
+    width?: number
+    height?: number
+  }
+}
+
+function CardFallback({ image }: CardFallbackProps) {
+  const width = image?.width ?? 124;
+  const height = image?.height ?? 124;
+
   return (
-    <div className="d-flex gap-2 border rounded p-2 shadow-sm h-100 placeholder-glow" aria-hidden="true">
-      <img
-        alt="Loading card cover placeholder"
-        className={`${s['card__cover']} rounded placeholder h-100`}
-      />
-      <div className={`${s['card__details']} d-flex flex-column`}>
+    <div
+      className="d-flex gap-2 border rounded p-2 shadow-sm h-100 placeholder-glow"
+      aria-hidden="true"
+    >
+      <div style={{
+        maxWidth: width,
+        maxHeight: height
+      }}>
+        <img
+          alt="Loading card cover placeholder"
+          width={width}
+          height={height}
+          className={`${s['card__cover']} rounded placeholder h-100`}
+        />
+      </div>
+      <div className={`${s['card__details']} d-flex flex-column flex-grow-1`}>
         <header>
-          <h4 className="mb-1 placeholder" />
+          <span
+            className="placeholder placeholder-lg w-50"
+            style={{ maxWidth: 170 }}
+          />
+          <h4 className="mb-1 placeholder w-100" />
         </header>
+        <span
+          className="placeholder placeholder-lg w-50"
+          style={{ maxWidth: 170 }}
+        />
+        <footer className="mt-auto">
+          <span className="placeholder placeholder-lg w-50" />
+        </footer>
       </div>
     </div>
   );
