@@ -6,6 +6,8 @@ import {
 } from 'astro:env/server';
 
 import type Periods from '../../music/types/periods.enum';
+import formatUnixDate from '../../helpers/format-unix-date';
+import type { Track } from '../../music/types/music.types';
 
 const commonParams = {
   user: SONGS_STATS_USER,
@@ -13,6 +15,19 @@ const commonParams = {
   format: 'json',
   limit: '6',
 };
+
+const transformTrackPayload = (tracks: Record<string, any>[]): Track[] =>
+  tracks.map((track) => ({
+    name: track.name,
+    album: track.album['#text'],
+    artist: track.artist['#text'],
+    url: track.url,
+    cover: {
+      src: track.image.at(-1)?.['#text'],
+      alt: `Album cover for the track ${track.name}`,
+    },
+    ...(track?.date?.uts ? { lastPlayedAt: formatUnixDate(track.date.uts) } : {})
+  }));
 
 const availableRequests = {
   playbackState: async (): Promise<Response> => {
@@ -26,7 +41,7 @@ const availableRequests = {
 
     if (fetchRecentTracks.status === 200) {
       const recentTracks = await fetchRecentTracks.json();
-      return new Response(JSON.stringify(recentTracks.recenttracks.track));
+      return new Response(JSON.stringify(transformTrackPayload(recentTracks.recenttracks.track)));
     }
 
     return new Response('[]');

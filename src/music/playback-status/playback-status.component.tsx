@@ -1,7 +1,6 @@
 import { use, useEffect, useRef, useState } from 'react';
 
 import Card from '../../components/card/card.component';
-import formatUnixDate from '../../helpers/format-unix-date';
 import makeFallbackArray from '../../helpers/make-fallback-array';
 import HOCWithSuspense from '../../hoc/with-suspense';
 import useIsVisible from '../../hooks/use-is-visible.hook';
@@ -32,7 +31,7 @@ function PlaybackStatus() {
   }, [playbackVisible]);
 
   const track = playbackState?.at(0);
-  const isPlayingNow = track?.['@attr']?.nowplaying || false;
+  const isPlayingNow = track?.lastPlayedAt || true;
 
   return (
     <section className="container">
@@ -59,15 +58,15 @@ function PlaybackStatus() {
                   </>
                 ) : (
                   <h6 className="text-truncate m-0 flex-grow-1">
-                    {formatUnixDate(Number.parseInt((track.date as any).uts))}
+                    {track?.lastPlayedAt}
                   </h6>
                 ),
               }}
               header={track.name}
-              body={track.artist['#text']}
+              body={track.artist}
               image={{
-                src: track.image.at(-1)?.['#text'] as string,
-                alt: `Album cover for ${track.album['#text']}`,
+                src: track.cover.src,
+                alt: track.cover.alt,
                 maxSize: {
                   width: 300,
                   height: 300,
@@ -91,18 +90,15 @@ function PlaybackStatus() {
                     topPill={{
                       bg: 'secondary',
                       maxWidth: 200,
-                      content: track?.date && (
+                      content: track?.lastPlayedAt && (
                         <p className="mb-0 text-truncate">
-                          {formatUnixDate(Number.parseInt(track?.date.uts))}
+                          {track.lastPlayedAt}
                         </p>
                       ),
                     }}
                     header={track.name}
-                    body={track.artist['#text']}
-                    image={{
-                      src: track.image.at(-1)?.['#text'] as string,
-                      alt: `Album cover for ${track?.name}`,
-                    }}
+                    body={track.artist}
+                    image={track.cover}
                     link={track.url}
                   />
                 </div>

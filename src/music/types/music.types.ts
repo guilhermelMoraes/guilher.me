@@ -7,25 +7,14 @@ export type Cover = {
 };
 
 export type Track = {
-  '@attr': { nowplaying?: boolean };
   name: string;
+  album: string;
+  artist: string;
   url: string;
-  artist: {
-    /**
-     * @description name of the artist
-     */
-    '#text': string;
-  };
-  image: Cover[];
-  album: {
-    /**
-     * @description name of the album
-     */
-    '#text': string;
-  };
-  date?: {
-    uts: string;
-    '#text': string;
+  lastPlayedAt?: string;
+  cover: {
+    src: string;
+    alt: string;
   };
 };
 
