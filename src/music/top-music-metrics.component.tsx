@@ -123,7 +123,10 @@ export default function TopMusicMetrics() {
                         src: album.image[2]['#text'],
                         alt: `Album cover for ${album.name}`,
                       },
-                      topPill: `Tocado ${album.playcount} vezes ${podium[album['@attr'].rank] ?? '⭐'}`,
+                      topPill: {
+                        bg: 'primary',
+                        content: `Tocado ${album.playcount} vezes ${podium[album['@attr'].rank] ?? '⭐'}`,
+                      },
                     }))}
                   />
                 </Tab>
@@ -141,7 +144,9 @@ export default function TopMusicMetrics() {
                         src: artist.image[2]['#text'],
                         alt: `Album cover for ${artist.name}`,
                       },
-                      topPill: `Tocado ${artist.playcount} vezes ${podium[artist['@attr'].rank] ?? '⭐'}`,
+                      topPill: {
+                        content: `Tocado ${artist.playcount} vezes ${podium[artist['@attr'].rank] ?? '⭐'}`,
+                      },
                     }))}
                   />
                 </Tab>
@@ -160,7 +165,9 @@ export default function TopMusicMetrics() {
                         src: track.image[2]['#text'],
                         alt: `Album cover for ${track.name}`,
                       },
-                      topPill: `Tocada ${track.playcount} vezes ${podium[track['@attr'].rank] ?? '⭐'}`,
+                      topPill: {
+                        content: `Tocada ${track.playcount} vezes ${podium[track['@attr'].rank] ?? '⭐'}`,
+                      },
                     }))}
                   />
                 </Tab>

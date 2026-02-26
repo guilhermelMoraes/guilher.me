@@ -1,9 +1,15 @@
 import { useState, type ReactNode } from 'react';
+import type { Variant } from 'react-bootstrap/esm/types';
+import { Badge } from 'react-bootstrap';
 
 import s from './card.module.css';
 
 export type CardProps = {
-  readonly topPill?: ReactNode;
+  readonly topPill?: {
+    bg?: Variant;
+    content: ReactNode;
+    maxWidth?: number;
+  };
   readonly header?: string;
   readonly body?: ReactNode;
   readonly link?: string;
@@ -20,7 +26,7 @@ export type CardProps = {
 };
 
 export default function Card({
-  topPill = null,
+  topPill,
   image,
   header,
   body,
@@ -60,7 +66,14 @@ export default function Card({
       <div className={`${s['card__details']} d-flex flex-column`}>
         {topPill && header && (
           <header>
-            {topPill}
+            <Badge
+              bg={topPill?.bg ?? 'primary'}
+              className="d-flex align-items-center mb-1"
+              style={{ maxWidth: topPill?.maxWidth }}
+            >
+              {topPill?.content}
+            </Badge>
+
             <h4 className="text-truncate mb-1" title={header}>
               {header}
             </h4>
@@ -88,10 +101,10 @@ export default function Card({
 
 type CardFallbackProps = {
   readonly image?: {
-    width?: number
-    height?: number
-  }
-}
+    width?: number;
+    height?: number;
+  };
+};
 
 function CardFallback({ image }: CardFallbackProps) {
   const width = image?.width ?? 124;
@@ -102,10 +115,12 @@ function CardFallback({ image }: CardFallbackProps) {
       className="d-flex gap-2 border rounded p-2 shadow-sm h-100 placeholder-glow"
       aria-hidden="true"
     >
-      <div style={{
-        maxWidth: width,
-        maxHeight: height
-      }}>
+      <div
+        style={{
+          maxWidth: width,
+          maxHeight: height,
+        }}
+      >
         <img
           alt="Loading card cover placeholder"
           width={width}

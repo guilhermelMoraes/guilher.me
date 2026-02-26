@@ -1,5 +1,3 @@
-import { Badge } from 'react-bootstrap';
-
 import type { CardProps } from '../components/card/card.component';
 import Card from '../components/card/card.component';
 import PeriodSelect, {
@@ -26,14 +24,12 @@ export default function TopItems({ items, periodSelector }: TopItemsProps) {
         {items.map(({ topPill, ...rest }, index) => (
           <div key={`${rest.link}-${index}`} className="col-lg-4">
             <Card
-              topPill={
-                <Badge
-                  className="mb-0 d-flex align-items-center"
-                  style={{ maxWidth: 150 }}
-                >
-                  <p className="mb-0 text-truncate">{topPill}</p>
-                </Badge>
-              }
+              topPill={{
+                maxWidth: 150,
+                content: (
+                  <p className="mb-0 text-truncate">{topPill?.content}</p>
+                ),
+              }}
               {...rest}
             />
           </div>

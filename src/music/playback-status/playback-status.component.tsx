@@ -1,5 +1,4 @@
 import { use, useEffect, useRef, useState } from 'react';
-import { Badge } from 'react-bootstrap';
 
 import Card from '../../components/card/card.component';
 import formatUnixDate from '../../helpers/format-unix-date';
@@ -15,8 +14,10 @@ const initialPlaybackPromise = fetchSongData<Track[]>('playbackState');
 
 function PlaybackStatus() {
   const initialPlaybackStatus = use(initialPlaybackPromise);
-  const [playbackState, setPlaybackState] = useState<Track[]>(initialPlaybackStatus);
-  
+  const [playbackState, setPlaybackState] = useState<Track[]>(
+    initialPlaybackStatus,
+  );
+
   const playbackWrapper = useRef<HTMLDivElement | null>(null);
   const playbackVisible = useIsVisible(playbackWrapper);
 
@@ -31,6 +32,7 @@ function PlaybackStatus() {
   }, [playbackVisible]);
 
   const track = playbackState?.at(0);
+  const isPlayingNow = track?.['@attr']?.nowplaying || false;
 
   return (
     <section className="container">
@@ -41,37 +43,26 @@ function PlaybackStatus() {
         >
           {track && (
             <Card
-              topPill={
-                <>
-                  {track?.['@attr']?.nowplaying && (
-                    <Badge
-                      bg="danger"
-                      className="d-flex align-items-center mb-1"
-                      style={{ maxWidth: 170 }}
-                    >
-                      <h6 className="text-truncate m-0 flex-grow-1">
-                        Ouvindo agora
-                      </h6>
-                      <span id={s['bars']} className="ms-1 flex-shrink-0">
-                        <span />
-                        <span />
-                        <span />
-                        <span />
-                      </span>
-                    </Badge>
-                  )}
-                  {track?.date && (
-                    <Badge
-                      className="d-flex align-items-center mb-1"
-                      bg="secondary"
-                    >
-                      <h6 className="text-truncate m-0 flex-grow-1">
-                        {formatUnixDate(Number.parseInt(track?.date.uts))}
-                      </h6>
-                    </Badge>
-                  )}
-                </>
-              }
+              topPill={{
+                bg: isPlayingNow ? 'danger' : 'secondary',
+                content: isPlayingNow ? (
+                  <>
+                    <h6 className="text-truncate m-0 flex-grow-1">
+                      Ouvindo agora
+                    </h6>
+                    <span id={s['bars']} className="ms-1 flex-shrink-0">
+                      <span />
+                      <span />
+                      <span />
+                      <span />
+                    </span>
+                  </>
+                ) : (
+                  <h6 className="text-truncate m-0 flex-grow-1">
+                    {formatUnixDate(Number.parseInt((track.date as any).uts))}
+                  </h6>
+                ),
+              }}
               header={track.name}
               body={track.artist['#text']}
               image={{
@@ -97,21 +88,15 @@ function PlaybackStatus() {
               .map((track, index) => (
                 <div key={`${index}-${track.url}`} className="mb-2">
                   <Card
-                    topPill={
-                      <>
-                        {track?.date && (
-                          <Badge
-                            className="d-flex align-items-center mb-1"
-                            bg="secondary"
-                            style={{ maxWidth: '200px' }}
-                          >
-                            <p className="mb-0 text-truncate">
-                              {formatUnixDate(Number.parseInt(track?.date.uts))}
-                            </p>
-                          </Badge>
-                        )}
-                      </>
-                    }
+                    topPill={{
+                      bg: 'secondary',
+                      maxWidth: 200,
+                      content: track?.date && (
+                        <p className="mb-0 text-truncate">
+                          {formatUnixDate(Number.parseInt(track?.date.uts))}
+                        </p>
+                      ),
+                    }}
                     header={track.name}
                     body={track.artist['#text']}
                     image={{
@@ -139,7 +124,10 @@ export function PlaybackStatusFallback() {
     <section className="container">
       <div className="row gx-2">
         <div className="col-12 col-lg-7 mb-2 mb-lg-0">
-          <Card mode="placeholder" fallbackProps={{ image: { height: 300, width: 300 } }} />
+          <Card
+            mode="placeholder"
+            fallbackProps={{ image: { height: 300, width: 300 } }}
+          />
         </div>
 
         <div className="col-12 col-lg-5 position-relative">
