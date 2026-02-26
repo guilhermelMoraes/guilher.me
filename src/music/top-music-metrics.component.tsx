@@ -4,6 +4,7 @@ import { Tab, Tabs } from 'react-bootstrap';
 import Periods from './types/periods.enum';
 import type { Album, Artist, TopTrack } from './types/music.types';
 import TopItems from './top-items';
+import fetchSongData from './fetch-song-data.service';
 
 const podium: Record<string, string> = {
   '1': '🥇',
@@ -11,28 +12,8 @@ const podium: Record<string, string> = {
   '3': '🥉',
 };
 
-const fetchSongData = async <T = unknown,>(
-  availableData:
-    | 'generalStats'
-    | 'playbackState'
-    | 'topAlbums'
-    | 'topArtists'
-    | 'topTracks',
-  period?: Periods,
-): Promise<T> => {
-  const params = new URLSearchParams({
-    data: availableData,
-    ...(period ? { period } : {}),
-  });
-
-  const response = await fetch(`/api/music-data?${params}`);
-  const data = (await response.json()) as T;
-
-  return data;
-};
-
 export default function TopMusicMetrics() {
-  const [currentTab, setCurrentTab] = useState('topAlbums');
+  const [currentTab, setCurrentTab] = useState('topTracks');
   const [topTracks, setTopTracks] = useState<TopTrack[]>([]);
   const [topAlbums, setTopAlbums] = useState<Album[]>([]);
   const [topArtists, setTopArtists] = useState<Artist[]>([]);
@@ -159,14 +140,11 @@ export default function TopMusicMetrics() {
                     }}
                     items={topTracks.map((track) => ({
                       header: track.name,
-                      body: track.artist.name,
+                      body: track.artist,
                       link: track.url,
-                      image: {
-                        src: track.image[2]['#text'],
-                        alt: `Album cover for ${track.name}`,
-                      },
+                      image: track.cover,
                       topPill: {
-                        content: `Tocada ${track.playcount} vezes ${podium[track['@attr'].rank] ?? '⭐'}`,
+                        content: `Tocada ${track.playCount} vezes ${podium[track.rank] ?? '⭐'}`,
                       },
                     }))}
                   />

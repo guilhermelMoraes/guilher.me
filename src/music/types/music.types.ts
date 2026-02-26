@@ -20,16 +20,14 @@ export type Track = {
 
 export type TopTrack = {
   name: string;
-  image: Cover[];
-  artist: {
-    name: string;
-  };
-  playcount: string;
-  '@attr': {
-    rank: string;
-  };
-  duration: string;
+  rank: string;
+  playCount: string;
   url: string;
+  artist: string;
+  cover: {
+    src: string;
+    alt: string;
+  };
 };
 
 export type Album = {

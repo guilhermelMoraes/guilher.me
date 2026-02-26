@@ -7,7 +7,7 @@ import {
 
 import type Periods from '../../music/types/periods.enum';
 import formatUnixDate from '../../helpers/format-unix-date';
-import type { Track } from '../../music/types/music.types';
+import type { TopTrack, Track } from '../../music/types/music.types';
 
 const commonParams = {
   user: SONGS_STATS_USER,
@@ -26,7 +26,24 @@ const transformTrackPayload = (tracks: Record<string, any>[]): Track[] =>
       src: track.image.at(-1)?.['#text'],
       alt: `Album cover for the track ${track.name}`,
     },
-    ...(track?.date?.uts ? { lastPlayedAt: formatUnixDate(track.date.uts) } : {})
+    ...(track?.date?.uts
+      ? { lastPlayedAt: formatUnixDate(track.date.uts) }
+      : {}),
+  }));
+
+const transformTopTrackPayload = (
+  topTrack: Record<string, any>[],
+): TopTrack[] =>
+  topTrack.map((topTrack) => ({
+    name: topTrack.name,
+    playCount: topTrack.playcount,
+    rank: topTrack['@attr']?.rank,
+    url: topTrack.url,
+    artist: topTrack.artist.name,
+    cover: {
+      src: topTrack.image.at(2)['#text'],
+      alt: `Album cover for ${topTrack.name}`,
+    },
   }));
 
 const availableRequests = {
@@ -41,7 +58,9 @@ const availableRequests = {
 
     if (fetchRecentTracks.status === 200) {
       const recentTracks = await fetchRecentTracks.json();
-      return new Response(JSON.stringify(transformTrackPayload(recentTracks.recenttracks.track)));
+      return new Response(
+        JSON.stringify(transformTrackPayload(recentTracks.recenttracks.track)),
+      );
     }
 
     return new Response('[]');
@@ -126,7 +145,9 @@ const availableRequests = {
 
     if (fetchTopTracks.status === 200) {
       const data = await fetchTopTracks.json();
-      return new Response(JSON.stringify(data.toptracks.track));
+      return new Response(
+        JSON.stringify(transformTopTrackPayload(data.toptracks.track)),
+      );
     }
 
     return new Response(null);
