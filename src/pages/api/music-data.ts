@@ -7,7 +7,6 @@ import {
 
 import type Periods from '../../music/types/periods.enum';
 import formatUnixDate from '../../helpers/format-unix-date';
-import type { TopTrack, Track } from '../../music/types/music.types';
 
 const commonParams = {
   user: SONGS_STATS_USER,
@@ -16,8 +15,8 @@ const commonParams = {
   limit: '6',
 };
 
-const transformTrackPayload = (tracks: Record<string, any>[]): Track[] =>
-  tracks.map((track) => ({
+const transformTrackPayload = (tracks: Record<string, any>[]): string =>
+  JSON.stringify(tracks.map((track) => ({
     name: track.name,
     album: track.album['#text'],
     artist: track.artist['#text'],
@@ -29,12 +28,12 @@ const transformTrackPayload = (tracks: Record<string, any>[]): Track[] =>
     ...(track?.date?.uts
       ? { lastPlayedAt: formatUnixDate(track.date.uts) }
       : {}),
-  }));
+  })));
 
 const transformTopTrackPayload = (
   topTrack: Record<string, any>[],
-): TopTrack[] =>
-  topTrack.map((topTrack) => ({
+): string =>
+  JSON.stringify(topTrack.map((topTrack) => ({
     name: topTrack.name,
     playCount: topTrack.playcount,
     rank: topTrack['@attr']?.rank,
@@ -44,7 +43,32 @@ const transformTopTrackPayload = (
       src: topTrack.image.at(2)['#text'],
       alt: `Album cover for ${topTrack.name}`,
     },
-  }));
+  })));
+
+const transformTopArtistsPayload = (topArtists: Record<string, any>[]): string =>
+  JSON.stringify(topArtists.map((topArtist) => ({
+    name: topArtist.name,
+    playCount: topArtist.playcount,
+    rank: topArtist['@attr'].rank,
+    url: topArtist.url,
+    cover: {
+      src: topArtist.image.at(2)['#text'],
+      alt: `Album cover for ${topArtist.name}`,
+    },
+  })));
+
+const transformTopAlbumsPayload = (topAlbums: Record<string, any>[]): string =>
+  JSON.stringify(topAlbums.map((topAlbum) => ({
+    name: topAlbum.name,
+    artist: topAlbum.artist.name,
+    playCount: topAlbum.playcount,
+    rank: topAlbum['@attr'].rank,
+    url: topAlbum.url,
+    cover: {
+      src: topAlbum.image.at(2)['#text'],
+      alt: `Album cover for ${topAlbum.name}`,
+    }
+  })));
 
 const availableRequests = {
   playbackState: async (): Promise<Response> => {
@@ -59,7 +83,7 @@ const availableRequests = {
     if (fetchRecentTracks.status === 200) {
       const recentTracks = await fetchRecentTracks.json();
       return new Response(
-        JSON.stringify(transformTrackPayload(recentTracks.recenttracks.track)),
+        transformTrackPayload(recentTracks.recenttracks.track),
       );
     }
 
@@ -113,7 +137,7 @@ const availableRequests = {
 
     if (fetchTopAlbums.status === 200) {
       const data = await fetchTopAlbums.json();
-      return new Response(JSON.stringify(data.topalbums.album));
+      return new Response(transformTopAlbumsPayload(data.topalbums.album));
     }
 
     return new Response(null);
@@ -129,7 +153,7 @@ const availableRequests = {
 
     if (fetchTopArtists.status === 200) {
       const data = await fetchTopArtists.json();
-      return new Response(JSON.stringify(data.topartists.artist));
+      return new Response(transformTopArtistsPayload(data.topartists.artist));
     }
 
     return new Response(null);
@@ -146,7 +170,7 @@ const availableRequests = {
     if (fetchTopTracks.status === 200) {
       const data = await fetchTopTracks.json();
       return new Response(
-        JSON.stringify(transformTopTrackPayload(data.toptracks.track)),
+        transformTopTrackPayload(data.toptracks.track),
       );
     }
 

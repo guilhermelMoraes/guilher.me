@@ -1,57 +1,34 @@
-export type Cover = {
-  size: 'small' | 'medium' | 'large' | 'extralarge';
-  /**
-   * @description image URL
-   */
-  '#text': string;
-};
+type Cover = {
+  src: string;
+  alt: string;
+}
 
-export type Track = {
-  name: string;
-  album: string;
-  artist: string;
-  url: string;
-  lastPlayedAt?: string;
-  cover: {
-    src: string;
-    alt: string;
-  };
-};
-
-export type TopTrack = {
-  name: string;
+type TopItem = {
   rank: string;
   playCount: string;
+}
+
+type BaseItem = {
+  name: string;
   url: string;
+  cover: Cover;
+}
+
+export type Track = BaseItem & {
+  album: string;
   artist: string;
-  cover: {
-    src: string;
-    alt: string;
-  };
+  lastPlayedAt?: string;
 };
 
-export type Album = {
-  artist: {
-    name: string;
-  };
-  url: string;
-  playcount: string;
-  '@attr': {
-    rank: string;
-  };
-  name: string;
-  image: Cover[];
+export type TopTrack = BaseItem & TopItem & {
+  artist: string;
 };
 
-export type Artist = {
-  name: string;
-  image: Cover[];
-  url: string;
-  playcount: string;
-  '@attr': {
-    rank: string;
-  };
+export type TopAlbum = BaseItem & TopItem & {
+  artist: string;
 };
+
+export type TopArtist = TopItem & BaseItem;
 
 export type Stat = {
   label: string;

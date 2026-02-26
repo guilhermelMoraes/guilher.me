@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { Tab, Tabs } from 'react-bootstrap';
 
 import Periods from './types/periods.enum';
-import type { Album, Artist, TopTrack } from './types/music.types';
+import type { TopAlbum, TopArtist, TopTrack } from './types/music.types';
 import TopItems from './top-items';
 import fetchSongData from './fetch-song-data.service';
 
@@ -13,14 +13,14 @@ const podium: Record<string, string> = {
 };
 
 export default function TopMusicMetrics() {
-  const [currentTab, setCurrentTab] = useState('topTracks');
+  const [currentTab, setCurrentTab] = useState('topAlbums');
   const [topTracks, setTopTracks] = useState<TopTrack[]>([]);
-  const [topAlbums, setTopAlbums] = useState<Album[]>([]);
-  const [topArtists, setTopArtists] = useState<Artist[]>([]);
+  const [topAlbums, setTopAlbums] = useState<TopAlbum[]>([]);
+  const [topArtists, setTopArtists] = useState<TopArtist[]>([]);
 
   const getTopAlbums = useCallback(
     async (period: Periods = Periods.LAST_WEEK): Promise<void> => {
-      const data = await fetchSongData<Album[]>('topAlbums', period);
+      const data = await fetchSongData<TopAlbum[]>('topAlbums', period);
       if (data) {
         setTopAlbums(data);
       }
@@ -30,7 +30,7 @@ export default function TopMusicMetrics() {
 
   const getTopArtists = useCallback(
     async (period: Periods = Periods.LAST_WEEK): Promise<void> => {
-      const data = await fetchSongData<Artist[]>('topArtists', period);
+      const data = await fetchSongData<TopArtist[]>('topArtists', period);
       if (data) {
         setTopArtists(data);
       }
@@ -98,15 +98,12 @@ export default function TopMusicMetrics() {
                     }}
                     items={topAlbums.map((album) => ({
                       header: album.name,
-                      body: album.artist.name,
+                      body: album.artist,
                       link: album.url,
-                      image: {
-                        src: album.image[2]['#text'],
-                        alt: `Album cover for ${album.name}`,
-                      },
+                      image: album.cover,
                       topPill: {
                         bg: 'primary',
-                        content: `Tocado ${album.playcount} vezes ${podium[album['@attr'].rank] ?? '⭐'}`,
+                        content: `Tocado ${album.playCount} vezes ${podium[album.rank] ?? '⭐'}`,
                       },
                     }))}
                   />
@@ -121,12 +118,9 @@ export default function TopMusicMetrics() {
                     items={topArtists.map((artist) => ({
                       header: artist.name,
                       link: artist.url,
-                      image: {
-                        src: artist.image[2]['#text'],
-                        alt: `Album cover for ${artist.name}`,
-                      },
+                      image: artist.cover,
                       topPill: {
-                        content: `Tocado ${artist.playcount} vezes ${podium[artist['@attr'].rank] ?? '⭐'}`,
+                        content: `Tocado ${artist.playCount} vezes ${podium[artist.rank] ?? '⭐'}`,
                       },
                     }))}
                   />
