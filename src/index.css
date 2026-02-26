@@ -14,10 +14,14 @@ section {
   text-align: justify;
 }
 
+body {
+  transition: background .5s ease-in-out;
+}
+
 /* #region Theme Switch */
 /* Credits to: https://uiverse.io/JustCode14/red-dingo-61 */
 .switch {
-  font-size: 17px;
+  font-size: 12px;
   position: relative;
   display: inline-block;
   width: 4em;
