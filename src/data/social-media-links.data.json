@@ -3,64 +3,76 @@
     {
       "icon": "bi-linkedin",
       "href": "https://www.linkedin.com/in/guilhermelmoraes/?locale=en",
-      "title": "LinkedIn"
+      "title": "LinkedIn",
+      "color": "#0a66c2"
     },
     {
       "icon": "bi-envelope-at-fill",
       "href": "mailto:moraes.guilherme32@proton.me",
-      "title": "E-mail"
+      "title": "E-mail",
+      "color": "#ea4335"
     },
     {
       "icon": "bi-github",
       "href": "https://github.com/guilhermelMoraes",
-      "title": "Github"
+      "title": "Github",
+      "color": "#24292f"
     }
   ],
   "personal": [
     {
       "icon": "bi-steam",
       "href": "https://steamcommunity.com/id/ego_patronus/",
-      "title": "Steam"
+      "title": "Steam",
+      "color": "#171a21"
     },
     {
       "icon": "bi-strava",
       "href": "https://www.strava.com/athletes/38100403",
-      "title": "Strava"
+      "title": "Strava",
+      "color": "#fc4c02"
     },
     {
       "icon": "bi-instagram",
       "href": "https://www.instagram.com/ego_patronus/",
-      "title": "Instagram"
+      "title": "Instagram",
+      "color": "#e4405f"
     },
     {
       "icon": "bi-twitch",
       "href": "https://www.twitch.tv/ego_patronus",
-      "title": "Twitch"
+      "title": "Twitch",
+      "color": "#9146FF"
     },
     {
       "icon": "bi-spotify",
       "href": "https://open.spotify.com/user/12149673892",
-      "title": "Spotify"
+      "title": "Spotify",
+      "color": "#1ed760"
     },
     {
       "icon": "bi-playstation",
       "href": "https://psnprofiles.com/ego_patronus",
-      "title": "Playstation"
+      "title": "Playstation",
+      "color": "#003087"
     },
     {
       "icon": "bi-xbox",
       "href": "https://www.xbox.com/pt-BR/play/user/egopatronus",
-      "title": "Xbox"
+      "title": "Xbox",
+      "color": "#107C10"
     },
     {
       "icon": "bi-nintendo-switch",
       "href": "https://lounge.nintendo.com/friendcode/7073-8254-1724/DV5KgCRf3k",
-      "title": "Nintendo Switch"
+      "title": "Nintendo Switch",
+      "color": "#E60012"
     },
     {
       "icon": "bi-discord",
       "href": "https://www.discordapp.com/users/742895195506343987",
-      "title": "Discord"
+      "title": "Discord",
+      "color": "#5865F2"
     }
   ]
 }
